@@ -185,6 +185,46 @@
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+
+  /* ── 登入頁 ── */
+  .login-overlay { display:none; position:fixed; inset:0; background:var(--navy); z-index:500; align-items:center; justify-content:center; }
+  .login-overlay.open { display:flex; }
+  .login-box { background:var(--white); border-radius:var(--radius); padding:40px; width:340px; box-shadow:var(--shadow-lg); }
+  .login-box h2 { font-size:18px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+  .login-box p  { font-size:12px; color:var(--gray-400); margin-bottom:24px; }
+  .login-field  { margin-bottom:14px; }
+  .login-field label { display:block; font-size:12px; font-weight:600; color:var(--gray-600); margin-bottom:5px; }
+  .login-field input { width:100%; padding:9px 12px; border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); font-size:14px; }
+  .login-field input:focus { border-color:var(--blue); outline:none; box-shadow:0 0 0 3px rgba(45,91,227,.12); }
+  .login-error  { background:var(--red-lt); color:var(--red); border-radius:var(--radius-sm); padding:8px 12px; font-size:12px; font-weight:600; margin-bottom:14px; display:none; }
+  .login-error.show { display:block; }
+  .btn-login { width:100%; padding:10px; background:var(--blue); color:white; border:none; border-radius:var(--radius-sm); font-size:14px; font-weight:700; cursor:pointer; margin-top:4px; }
+  .btn-login:hover { background:#1e4dd4; }
+  /* ── 日誌介面 ── */
+  .audit-filter { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+  .audit-filter select, .audit-filter input { padding:5px 8px; border:1.5px solid var(--gray-200); border-radius:6px; font-size:12px; }
+  .audit-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .audit-table th { background:var(--gray-100); padding:7px 8px; text-align:left; font-weight:700; font-size:11px; color:var(--gray-600); border-bottom:2px solid var(--gray-200); white-space:nowrap; }
+  .audit-table td { padding:7px 8px; border-bottom:1px solid var(--gray-100); vertical-align:top; }
+  .audit-table tr:hover td { background:var(--gray-50); }
+  .audit-action { display:inline-block; padding:2px 7px; border-radius:4px; font-weight:700; font-size:10px; }
+  .audit-action.CREATE { background:var(--green-lt); color:var(--green); }
+  .audit-action.UPDATE { background:var(--blue-lt);  color:var(--blue); }
+  .audit-action.DELETE { background:var(--red-lt);   color:var(--red); }
+  .audit-action.LOGIN  { background:var(--teal-lt);  color:var(--teal); }
+  .audit-action.LOGOUT { background:var(--gray-100); color:var(--gray-600); }
+  .audit-diff { font-family:monospace; font-size:11px; color:var(--gray-600); max-width:280px; word-break:break-all; }
+  .diff-before { color:var(--red); }
+  .diff-after  { color:var(--green); }
+  .audit-page { display:flex; gap:6px; align-items:center; justify-content:center; margin-top:12px; }
+  /* ── 帳號管理 ── */
+  .user-role-badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700; }
+  .user-role-badge.admin { background:var(--red-lt); color:var(--red); }
+  .user-role-badge.user  { background:var(--blue-lt); color:var(--blue); }
+  /* ── 登入狀態列 ── */
+  .login-info { font-size:12px; color:rgba(255,255,255,.75); display:flex; align-items:center; gap:8px; }
+  .logout-btn { background:rgba(255,255,255,.15); border:none; color:white; padding:4px 10px; border-radius:4px; font-size:12px; cursor:pointer; }
+  .logout-btn:hover { background:rgba(255,255,255,.25); }
 </style>
 </head>
 <body>
@@ -195,8 +235,14 @@
     <div class="pad-status-banner"><div class="dot"></div>PAD 自動讀取中</div>
     <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" id="masterBtn">📂 主檔管理</button>
     <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" id="paramsBtn">⚙️ 參數設定</button>
+    <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;display:none;" id="usersMenuBtn">👥 帳號管理</button>
+    <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;display:none;" id="auditMenuBtn">📋 操作日誌</button>
   </div>
-</header>
+    <div class="login-info" id="loginInfo" style="display:none;">
+      <span id="loginUsername"></span>
+      <button class="logout-btn" id="logoutBtn">登出</button>
+    </div>
+  </header>
 
 <div class="app-body">
 
@@ -443,6 +489,291 @@
 'use strict';
 
 // ══════════════════════════════════════════════════════════════════
+//  Auth 狀態
+// ══════════════════════════════════════════════════════════════════
+let currentUser = null;  // { username, role, token }
+
+function saveSession(user) {
+  currentUser = user;
+  try {
+    localStorage.setItem('transfer_session', JSON.stringify(user));
+  } catch(e) {}
+}
+function loadSession() {
+  try {
+    const s = localStorage.getItem('transfer_session');
+    return s ? JSON.parse(s) : null;
+  } catch(e) { return null; }
+}
+function clearSession() {
+  currentUser = null;
+  try { localStorage.removeItem('transfer_session'); } catch(e) {}
+}
+
+// ── Token 自動附加到所有 API 請求 ────────────────────────────────
+async function apiFetch(path, method = 'GET', body = null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (currentUser?.token) {
+    opts.headers['Authorization'] = 'Bearer ' + currentUser.token;
+  }
+  if (body !== null) opts.body = JSON.stringify(body);
+  const res = await fetch(path, opts);
+  if (res.status === 401) {
+    // Session 過期，強制重新登入
+    clearSession();
+    showLoginOverlay();
+    return { error: '未登入或 Session 已過期' };
+  }
+  return res.json();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  登入 / 登出
+// ══════════════════════════════════════════════════════════════════
+function showLoginOverlay() {
+  document.getElementById('loginOverlay').classList.add('open');
+  document.getElementById('loginInfo').style.display = 'none';
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('loginPassword').value = '';
+}
+
+function hideLoginOverlay() {
+  document.getElementById('loginOverlay').classList.remove('open');
+  const info = document.getElementById('loginInfo');
+  info.style.display = 'flex';
+  document.getElementById('loginUsername').textContent = '';
+  const span = document.createElement('span');
+  span.textContent = '👤 ' + (currentUser?.username || '');
+  document.getElementById('loginInfo').insertBefore(span, document.getElementById('logoutBtn'));
+  // 顯示帳號管理按鈕（僅 admin）
+  const usersBtn = document.getElementById('usersMenuBtn');
+  if (usersBtn) usersBtn.style.display = currentUser?.role === 'admin' ? '' : 'none';
+  const auditBtn = document.getElementById('auditMenuBtn');
+  if (auditBtn) auditBtn.style.display = currentUser?.role === 'admin' ? '' : 'none';
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl    = document.getElementById('loginError');
+  if (!username || !password) {
+    errEl.textContent = '請輸入帳號與密碼';
+    errEl.classList.add('show'); return;
+  }
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      saveSession({ username: data.username, role: data.role, token: data.token });
+      hideLoginOverlay();
+      loadRecords();
+      loadMasterCache();
+    } else {
+      errEl.textContent = data.error || '帳號或密碼錯誤';
+      errEl.classList.add('show');
+    }
+  } catch(e) {
+    errEl.textContent = '無法連線到伺服器';
+    errEl.classList.add('show');
+  }
+}
+
+async function doLogout() {
+  try { await apiFetch('/api/logout', 'POST'); } catch(e) {}
+  clearSession();
+  // 清除登入資訊列中的使用者名稱 span
+  const info = document.getElementById('loginInfo');
+  Array.from(info.children).forEach(c => { if (c.tagName === 'SPAN') c.remove(); });
+  showLoginOverlay();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  帳號管理
+// ══════════════════════════════════════════════════════════════════
+async function openUsers() {
+  await loadUsers();
+  document.getElementById('usersModal').classList.add('open');
+}
+
+async function loadUsers() {
+  const res   = await apiFetch('/api/users');
+  const tbody = document.getElementById('users_tbody');
+  tbody.innerHTML = '';
+  (res.users || []).forEach(u => {
+    const tr = document.createElement('tr');
+    const tdName = document.createElement('td');
+    tdName.style.fontWeight = '700'; tdName.textContent = u.username;
+    const tdRole = document.createElement('td');
+    const badge  = document.createElement('span');
+    badge.className = `user-role-badge ${u.role}`;
+    badge.textContent = u.role === 'admin' ? '管理員' : '一般';
+    tdRole.appendChild(badge);
+    const tdAt = document.createElement('td');
+    tdAt.style.cssText = 'font-size:11px;color:var(--gray-400);';
+    tdAt.textContent = u.created_at || '';
+    const tdAct = document.createElement('td');
+    if (u.username !== currentUser?.username) {
+      const db = document.createElement('button');
+      db.className = 'btn-sm btn-sm-delete'; db.style.cssText = 'font-size:11px;padding:3px 8px;';
+      db.textContent = '刪除';
+      db.addEventListener('click', () => deleteUser(u.username));
+      const pb = document.createElement('button');
+      pb.className = 'btn-sm btn-sm-edit'; pb.style.cssText = 'font-size:11px;padding:3px 8px;margin-right:4px;';
+      pb.textContent = '改密碼';
+      pb.addEventListener('click', () => promptChangePassword(u.username));
+      tdAct.appendChild(pb); tdAct.appendChild(db);
+    } else {
+      const self = document.createElement('span');
+      self.style.cssText = 'font-size:11px;color:var(--gray-400);';
+      self.textContent = '（自己）';
+      const pb = document.createElement('button');
+      pb.className = 'btn-sm btn-sm-edit'; pb.style.cssText = 'font-size:11px;padding:3px 8px;margin-right:4px;';
+      pb.textContent = '改密碼';
+      pb.addEventListener('click', () => promptChangePassword(u.username));
+      tdAct.appendChild(pb); tdAct.appendChild(self);
+    }
+    tr.appendChild(tdName); tr.appendChild(tdRole);
+    tr.appendChild(tdAt);   tr.appendChild(tdAct);
+    tbody.appendChild(tr);
+  });
+}
+
+async function addUser() {
+  const username = document.getElementById('new_username').value.trim();
+  const password = document.getElementById('new_userpassword').value;
+  const role     = document.getElementById('new_userrole').value;
+  if (!username || !password) { showToast('請填寫帳號與密碼', 'error'); return; }
+  const res = await apiFetch('/api/users', 'POST', { username, password, role });
+  if (res.success) {
+    document.getElementById('new_username').value = '';
+    document.getElementById('new_userpassword').value = '';
+    showToast(`✅ 使用者「${username}」已新增`, 'success');
+    loadUsers();
+  } else showToast(res.error || '新增失敗', 'error');
+}
+
+async function deleteUser(username) {
+  if (!confirm(`確認刪除使用者「${username}」？此操作無法還原。`)) return;
+  const res = await apiFetch(`/api/users/${username}`, 'DELETE');
+  if (res.success) { showToast('已刪除', 'success'); loadUsers(); }
+  else showToast(res.error || '刪除失敗', 'error');
+}
+
+async function promptChangePassword(username) {
+  const pw = prompt(`請輸入「${username}」的新密碼（至少6碼）：`);
+  if (!pw) return;
+  const res = await apiFetch(`/api/users/${username}/password`, 'PUT', { password: pw });
+  if (res.success) showToast('✅ 密碼已更新', 'success');
+  else showToast(res.error || '修改失敗', 'error');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  操作日誌
+// ══════════════════════════════════════════════════════════════════
+let auditPage = 1;
+
+async function openAudit() {
+  auditPage = 1;
+  await loadAudit();
+  document.getElementById('auditModal').classList.add('open');
+}
+
+async function loadAudit() {
+  const op  = document.getElementById('audit_operator').value.trim();
+  const act = document.getElementById('audit_action').value;
+  const res = document.getElementById('audit_resource').value;
+  const url = `/api/audit?page=${auditPage}&limit=50` +
+    (op  ? `&operator=${encodeURIComponent(op)}`   : '') +
+    (act ? `&action=${encodeURIComponent(act)}`     : '') +
+    (res ? `&resource=${encodeURIComponent(res)}`   : '');
+
+  const data  = await apiFetch(url);
+  const tbody = document.getElementById('audit_tbody');
+  tbody.innerHTML = '';
+  document.getElementById('auditTotal').textContent = `共 ${data.total || 0} 筆`;
+
+  (data.logs || []).forEach(log => {
+    const tr = document.createElement('tr');
+    const cells = [
+      log.timestamp || '',
+      log.operator  || '',
+      log.action    || '',
+      log.resource  || '',
+      log.resource_id ? log.resource_id.substring(0, 8) + '…' : '',
+    ];
+    cells.forEach((val, i) => {
+      const td = document.createElement('td');
+      if (i === 2) {
+        const span = document.createElement('span');
+        span.className = `audit-action ${val}`;
+        const labels = {CREATE:'新增',UPDATE:'修改',DELETE:'刪除',LOGIN:'登入',LOGOUT:'登出'};
+        span.textContent = labels[val] || val;
+        td.appendChild(span);
+      } else {
+        td.textContent = val;
+        if (i === 0) { td.style.cssText = 'white-space:nowrap;font-size:11px;'; }
+        if (i === 4) { td.style.cssText = 'font-family:monospace;font-size:11px;color:var(--gray-400);'; }
+      }
+      tr.appendChild(td);
+    });
+    // diff / note 欄
+    const tdDiff = document.createElement('td');
+    tdDiff.className = 'audit-diff';
+    if (log.note) {
+      tdDiff.textContent = log.note;
+    } else if (log.diff && Object.keys(log.diff).length) {
+      Object.entries(log.diff).slice(0, 3).forEach(([k, v]) => {
+        const line = document.createElement('div');
+        const key  = document.createElement('span');
+        key.style.fontWeight = '600'; key.textContent = k + ': ';
+        const before = document.createElement('span');
+        before.className = 'diff-before';
+        before.textContent = String(v.before ?? '').substring(0, 30);
+        const arrow = document.createTextNode(' → ');
+        const after = document.createElement('span');
+        after.className = 'diff-after';
+        after.textContent = String(v.after ?? '').substring(0, 30);
+        line.appendChild(key); line.appendChild(before);
+        line.appendChild(arrow); line.appendChild(after);
+        tdDiff.appendChild(line);
+      });
+      if (Object.keys(log.diff).length > 3) {
+        const more = document.createElement('div');
+        more.style.color = 'var(--gray-400)';
+        more.textContent = `…還有 ${Object.keys(log.diff).length - 3} 個欄位`;
+        tdDiff.appendChild(more);
+      }
+    }
+    tr.appendChild(tdDiff);
+    tbody.appendChild(tr);
+  });
+
+  // 分頁按鈕
+  const totalPages = Math.ceil((data.total || 0) / 50);
+  const pageEl = document.getElementById('auditPage');
+  pageEl.innerHTML = '';
+  if (totalPages > 1) {
+    const prev = document.createElement('button');
+    prev.className = 'btn btn-ghost'; prev.style.cssText = 'padding:4px 10px;font-size:12px;';
+    prev.textContent = '← 上一頁'; prev.disabled = auditPage <= 1;
+    prev.addEventListener('click', () => { auditPage--; loadAudit(); });
+    const info = document.createElement('span');
+    info.style.fontSize = '12px'; info.textContent = `${auditPage} / ${totalPages}`;
+    const next = document.createElement('button');
+    next.className = 'btn btn-ghost'; next.style.cssText = 'padding:4px 10px;font-size:12px;';
+    next.textContent = '下一頁 →'; next.disabled = auditPage >= totalPages;
+    next.addEventListener('click', () => { auditPage++; loadAudit(); });
+    pageEl.appendChild(prev); pageEl.appendChild(info); pageEl.appendChild(next);
+  }
+}
+
+
+
+// ══════════════════════════════════════════════════════════════════
 //  全域狀態
 // ══════════════════════════════════════════════════════════════════
 let allRecords       = [];
@@ -465,12 +796,7 @@ function esc(str) {
 // ══════════════════════════════════════════════════════════════════
 //  API
 // ══════════════════════════════════════════════════════════════════
-async function apiFetch(path, method = 'GET', body = null) {
-  const opts = { method, headers: { 'Content-Type': 'application/json' } };
-  if (body !== null) opts.body = JSON.stringify(body);
-  const res = await fetch(path, opts);
-  return res.json();
-}
+// apiFetch 已移至 Auth 區塊（含 Bearer token）
 
 // ══════════════════════════════════════════════════════════════════
 //  主檔快取
@@ -571,6 +897,25 @@ function bindEvents() {
   document.getElementById('addCustomerBtn').addEventListener('click', addCustomer);
   document.getElementById('parts_search').addEventListener('input',     loadMasterParts);
   document.getElementById('customers_search').addEventListener('input', loadMasterCustomers);
+
+  // 登入/登出
+  document.getElementById('loginBtn').addEventListener('click', doLogin);
+  document.getElementById('loginPassword').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+  document.getElementById('logoutBtn').addEventListener('click', doLogout);
+
+  // 帳號管理
+  const usersMenuBtn = document.getElementById('usersMenuBtn');
+  if (usersMenuBtn) usersMenuBtn.addEventListener('click', openUsers);
+  document.getElementById('usersCloseBtn').addEventListener('click', () => closeModal('usersModal'));
+  document.getElementById('addUserBtn').addEventListener('click', addUser);
+
+  // 日誌
+  const auditMenuBtn = document.getElementById('auditMenuBtn');
+  if (auditMenuBtn) auditMenuBtn.addEventListener('click', openAudit);
+  document.getElementById('auditCloseBtn').addEventListener('click', () => closeModal('auditModal'));
+  document.getElementById('auditSearchBtn').addEventListener('click', () => { auditPage = 1; loadAudit(); });
 
   // Modal 點背景關閉
   document.querySelectorAll('.modal-overlay').forEach(m => {
@@ -1309,11 +1654,114 @@ function showToast(msg, type = 'info') {
 document.addEventListener('DOMContentLoaded', () => {
   initBatchRows();
   bindEvents();
-  loadMasterCache();
-  loadRecords();
-  setInterval(loadRecords,     30_000);
-  setInterval(loadMasterCache, 120_000);
+
+  // 嘗試恢復上次的 session
+  const saved = loadSession();
+  if (saved?.token) {
+    currentUser = saved;
+    // 驗證 token 是否仍有效
+    apiFetch('/api/records?limit=1').then(res => {
+      if (res.error && res.error.includes('未登入')) {
+        clearSession(); showLoginOverlay();
+      } else {
+        hideLoginOverlay();
+        loadMasterCache();
+        loadRecords();
+      }
+    }).catch(() => { clearSession(); showLoginOverlay(); });
+  } else {
+    showLoginOverlay();
+  }
+
+  setInterval(() => { if (currentUser) loadRecords(); },     30_000);
+  setInterval(() => { if (currentUser) loadMasterCache(); }, 120_000);
 });
 </script>
+
+<!-- 登入 overlay -->
+<div class="login-overlay open" id="loginOverlay">
+  <div class="login-box">
+    <h2>🔐 移轉銷貨主控系統</h2>
+    <p>請輸入帳號與密碼登入</p>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-field">
+      <label>帳號</label>
+      <input type="text" id="loginUsername" placeholder="username" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>密碼</label>
+      <input type="password" id="loginPassword" placeholder="password" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="loginBtn">登入</button>
+  </div>
+</div>
+
+<!-- 帳號管理 modal -->
+<div class="modal-overlay" id="usersModal">
+  <div class="modal" style="max-width:560px;width:95%;">
+    <h3>👥 帳號管理</h3>
+    <p>僅管理員可新增或刪除使用者。</p>
+    <div style="max-height:240px;overflow-y:auto;margin-bottom:14px;">
+      <table class="master-table" id="usersTable">
+        <thead><tr><th>帳號</th><th>角色</th><th>建立時間</th><th style="width:120px;"></th></tr></thead>
+        <tbody id="users_tbody"></tbody>
+      </table>
+    </div>
+    <div style="border-top:1.5px solid var(--gray-200);padding-top:12px;">
+      <div style="font-size:11px;font-weight:700;color:var(--gray-400);margin-bottom:8px;">＋ 新增使用者</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:6px;align-items:center;">
+        <input type="text" id="new_username" placeholder="帳號">
+        <input type="password" id="new_userpassword" placeholder="密碼（至少6碼）">
+        <select id="new_userrole">
+          <option value="user">一般</option>
+          <option value="admin">管理員</option>
+        </select>
+        <button class="btn btn-primary" style="padding:7px 14px;" id="addUserBtn">新增</button>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn btn-ghost" id="usersCloseBtn">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- 日誌 modal -->
+<div class="modal-overlay" id="auditModal">
+  <div class="modal" style="max-width:820px;width:96%;">
+    <h3>📋 操作日誌</h3>
+    <div class="audit-filter">
+      <input type="text" id="audit_operator" placeholder="操作者" style="width:100px;">
+      <select id="audit_action">
+        <option value="">所有動作</option>
+        <option value="CREATE">新增</option>
+        <option value="UPDATE">修改</option>
+        <option value="DELETE">刪除</option>
+        <option value="LOGIN">登入</option>
+        <option value="LOGOUT">登出</option>
+      </select>
+      <select id="audit_resource">
+        <option value="">所有資源</option>
+        <option value="records">交易記錄</option>
+        <option value="parts">品號</option>
+        <option value="customers">客戶</option>
+        <option value="users">帳號</option>
+        <option value="auth">身份驗證</option>
+      </select>
+      <button class="btn btn-ghost" style="padding:5px 12px;font-size:12px;" id="auditSearchBtn">🔍 搜尋</button>
+      <span id="auditTotal" style="font-size:12px;color:var(--gray-400);align-self:center;"></span>
+    </div>
+    <div style="max-height:380px;overflow-y:auto;">
+      <table class="audit-table">
+        <thead><tr><th>時間</th><th>操作者</th><th>動作</th><th>資源</th><th>ID</th><th>備註/差異</th></tr></thead>
+        <tbody id="audit_tbody"></tbody>
+      </table>
+    </div>
+    <div class="audit-page" id="auditPage"></div>
+    <div class="modal-actions" style="margin-top:12px;">
+      <button class="btn btn-ghost" id="auditCloseBtn">關閉</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

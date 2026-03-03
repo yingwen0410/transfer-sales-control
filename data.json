@@ -145,5 +145,14 @@
       "code": "F04001",
       "note": ""
     }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "password": "9cf8599cccfe76f1e6f9f91e516d3338:8110f2ea03c144220ecb10b766a64b8fbf678d053df7888f7eea83203e9ac14f",
+      "role": "admin",
+      "created_at": "2026/03/03 16:08",
+      "disabled": false
+    }
   ]
 }

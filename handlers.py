@@ -22,6 +22,13 @@ from schema import (
     RECORD_READONLY, RECORD_BUSINESS_KEYS,
     PARAM_KEYS, PARAM_DEFAULTS,
 )
+from auth import (
+    require_auth, extract_token, revoke_token,
+    validate_token, write_audit,
+    create_user, delete_user, change_password,
+    find_user, get_users, ensure_default_admin,
+    init_pad_token,
+)
 
 HTML_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
 
@@ -71,6 +78,152 @@ class BaseHandler:
     def ok(self, payload: dict = None, status: int = 200):
         self.send_json({"success": True, **(payload or {})}, status)
 
+
+
+
+# ── /api/login  /api/logout ──────────────────────────────────────────────────
+
+class AuthHandler(BaseHandler):
+
+    def login(self):
+        body     = self.read_body()
+        username = str(body.get("username", "")).strip()[:50]
+        password = str(body.get("password", ""))[:200]
+
+        if not username or not password:
+            self.error("請輸入帳號與密碼", 400); return
+
+        from storage import load_data, transaction
+        from auth import verify_password, create_session
+        data = load_data()
+        ensure_default_admin(data)
+        user = find_user(data, username)
+
+        if not user or not verify_password(password, user.get("password", "")):
+            self.error("帳號或密碼錯誤", 401); return
+        if user.get("disabled"):
+            self.error("此帳號已停用，請聯絡管理員", 403); return
+
+        token = create_session(username)
+
+        # 寫登入日誌
+        from storage import transaction as txn
+        with txn() as d:
+            write_audit(d, username, "LOGIN", "auth", note="登入成功")
+
+        self.send_json({
+            "success":  True,
+            "token":    token,
+            "username": username,
+            "role":     user.get("role", "user"),
+        })
+
+    def logout(self):
+        token   = extract_token(self.rh)
+        session = validate_token(token)
+        if session:
+            from storage import transaction as txn
+            with txn() as d:
+                write_audit(d, session["username"], "LOGOUT", "auth")
+        revoke_token(token)
+        self.ok()
+
+
+# ── /api/users ───────────────────────────────────────────────────────────────
+
+class UsersHandler(BaseHandler):
+
+    def get_list(self, caller: dict):
+        if caller.get("role") != "admin":
+            self.error("僅管理員可查看帳號清單", 403); return
+        from storage import load_data
+        data  = load_data()
+        users = [
+            {k: v for k, v in u.items() if k != "password"}
+            for u in get_users(data)
+        ]
+        self.send_json({"users": users})
+
+    def post(self, caller: dict):
+        if caller.get("role") != "admin":
+            self.error("僅管理員可新增帳號", 403); return
+        body     = self.read_body()
+        username = str(body.get("username", "")).strip()[:50]
+        password = str(body.get("password", ""))[:200]
+        role     = str(body.get("role", "user"))[:10]
+        from storage import transaction
+        try:
+            with transaction() as data:
+                ensure_default_admin(data)
+                user = create_user(data, username, password, role)
+                write_audit(data, caller["username"], "CREATE", "users",
+                            resource_id=username,
+                            after={"username": username, "role": role})
+        except ValueError as e:
+            self.error(str(e), 400); return
+        self.ok({"user": {k: v for k, v in user.items() if k != "password"}}, 201)
+
+    def delete(self, username: str, caller: dict):
+        if caller.get("role") != "admin":
+            self.error("僅管理員可刪除帳號", 403); return
+        from storage import transaction
+        try:
+            with transaction() as data:
+                delete_user(data, username, operator=caller["username"])
+                write_audit(data, caller["username"], "DELETE", "users",
+                            resource_id=username)
+        except ValueError as e:
+            self.error(str(e), 400); return
+        self.ok()
+
+    def change_pw(self, username: str, caller: dict):
+        """管理員幫任何人改密碼，或使用者改自己的密碼。"""
+        if caller.get("role") != "admin" and caller["username"] != username:
+            self.error("無權限修改他人密碼", 403); return
+        body     = self.read_body()
+        new_pw   = str(body.get("password", ""))[:200]
+        from storage import transaction
+        try:
+            with transaction() as data:
+                change_password(data, username, new_pw)
+                write_audit(data, caller["username"], "UPDATE", "users",
+                            resource_id=username, note="修改密碼")
+        except ValueError as e:
+            self.error(str(e), 400); return
+        self.ok()
+
+
+# ── /api/audit ───────────────────────────────────────────────────────────────
+
+class AuditHandler(BaseHandler):
+
+    def get_list(self, query_string: str, caller: dict):
+        if caller.get("role") != "admin":
+            self.error("僅管理員可查看日誌", 403); return
+        from urllib.parse import parse_qs
+        from storage import load_data
+        qs     = parse_qs(query_string)
+        page   = max(1, int(qs.get("page",  ["1"])[0] or 1))
+        limit  = min(100, int(qs.get("limit", ["50"])[0] or 50))
+        op_filter  = qs.get("operator",  [""])[0].strip()[:50]
+        act_filter = qs.get("action",    [""])[0].strip()[:20]
+        res_filter = qs.get("resource",  [""])[0].strip()[:20]
+
+        data = load_data()
+        logs = list(reversed(data.get("audit_logs", [])))  # 最新在前
+
+        if op_filter:
+            logs = [l for l in logs if op_filter.lower() in l.get("operator","").lower()]
+        if act_filter:
+            logs = [l for l in logs if l.get("action") == act_filter]
+        if res_filter:
+            logs = [l for l in logs if l.get("resource") == res_filter]
+
+        total  = len(logs)
+        offset = (page - 1) * limit
+        logs   = logs[offset: offset + limit]
+
+        self.send_json({"logs": logs, "total": total, "page": page, "limit": limit})
 
 # ── 靜態檔案 ─────────────────────────────────────────────────────────────────
 
@@ -136,9 +289,7 @@ class RecordsHandler(BaseHandler):
                 "pad_executed_at":   "",
                 "pad_error":         "",
                 "created_at":        datetime.now().strftime("%Y/%m/%d %H:%M"),
-                # 業務欄位（已清理）
                 **clean,
-                # 旗標初始值
                 "flag_xin_order":    "",
                 "flag_xin_sale":     "",
                 "flag_ju_purchase":  "",
@@ -146,6 +297,10 @@ class RecordsHandler(BaseHandler):
                 "flag_ju_sale":      "待人工",
             }
             data["records"].append(record)
+            write_audit(data, _get_caller(self.rh), "CREATE", "records",
+                        resource_id=record["id"],
+                        after={k: record.get(k) for k in
+                               ["txn_id","customer_name","customer_order_no","xin_part_no","qty"]})
 
         self.ok({"record": record}, status=201)
 
@@ -192,17 +347,25 @@ class RecordsHandler(BaseHandler):
 
             updated["modified_at"]    = datetime.now().strftime("%Y/%m/%d %H:%M")
             data["records"][idx]      = updated
+            write_audit(data, _get_caller(self.rh), "UPDATE", "records",
+                        resource_id=rec_id, before=original, after=updated)
 
         self.ok({"record": updated})
 
     def delete(self, rec_id: str):
+        deleted_rec = None
         with transaction() as data:
-            before = len(data["records"])
-            data["records"] = [r for r in data["records"] if r["id"] != rec_id]
-            if len(data["records"]) == before:
+            before_list = data["records"]
+            deleted_rec = next((r for r in before_list if r["id"] == rec_id), None)
+            if not deleted_rec:
                 raise _AbortTransaction(not_found=True)
+            data["records"] = [r for r in before_list if r["id"] != rec_id]
             for i, r in enumerate(data["records"]):
                 r["seq"] = i + 1
+            write_audit(data, _get_caller(self.rh), "DELETE", "records",
+                        resource_id=rec_id,
+                        before={k: deleted_rec.get(k) for k in
+                                ["txn_id","customer_name","customer_order_no","xin_part_no","qty"]})
 
         self.ok()
 
@@ -492,6 +655,18 @@ class _AbortTransaction(Exception):
 
 # ── 主路由分發 ────────────────────────────────────────────────────────────────
 
+def _get_caller(request_handler) -> str:
+    """從 request 取得操作者名稱，供 audit log 使用。"""
+    token   = extract_token(request_handler)
+    session = validate_token(token)
+    if session:
+        return session.get("username", "?")
+    pad_tok = request_handler.headers.get("X-PAD-Token", "")
+    if pad_tok:
+        return "PAD"
+    return "anonymous"
+
+
 def dispatch(request_handler):
     """
     根據 HTTP method + path 呼叫對應 handler。
@@ -503,6 +678,12 @@ def dispatch(request_handler):
     qs     = parsed.query
 
     def _handle():
+        # ── 身份驗證攔截 ──────────────────────────────────────────────────
+        parsed_path = parsed.path.rstrip("/") or "/"
+        caller = require_auth(request_handler, parsed_path)
+        if caller is None:
+            return  # require_auth 已送出 401
+
         # 靜態首頁
         if method == "GET" and path in ("/", "/index.html"):
             StaticHandler(request_handler).get()
@@ -567,6 +748,41 @@ def dispatch(request_handler):
             else: _method_not_allowed(request_handler)
             return
 
+
+        # ── /api/login / logout ──
+        if path == "/api/login":
+            if method == "POST": AuthHandler(request_handler).login()
+            else: _method_not_allowed(request_handler)
+            return
+
+        if path == "/api/logout":
+            if method == "POST": AuthHandler(request_handler).logout()
+            else: _method_not_allowed(request_handler)
+            return
+
+        # ── /api/users ──
+        if path == "/api/users":
+            h = UsersHandler(request_handler)
+            if   method == "GET":  h.get_list(caller)
+            elif method == "POST": h.post(caller)
+            else: _method_not_allowed(request_handler)
+            return
+
+        if path.startswith("/api/users/"):
+            parts = path.split("/")
+            username = parts[3] if len(parts) > 3 else ""
+            h = UsersHandler(request_handler)
+            if   method == "DELETE":              h.delete(username, caller)
+            elif method == "PUT" and len(parts) > 4 and parts[4] == "password":
+                h.change_pw(username, caller)
+            else: _method_not_allowed(request_handler)
+            return
+
+        # ── /api/audit ──
+        if path == "/api/audit":
+            if method == "GET": AuditHandler(request_handler).get_list(qs, caller)
+            else: _method_not_allowed(request_handler)
+            return
 
         # ── /api/pad ── Power Automate 專用 ──
         if path == "/api/pad/queue":

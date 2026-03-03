@@ -14,6 +14,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 from storage import DATA_FILE
 from handlers import dispatch
+from auth import init_pad_token
 
 PORT = 5000
 
@@ -50,6 +51,16 @@ if __name__ == "__main__":
     print("  員工請用瀏覽器開啟：http://[伺服器IP]:5000")
     print("  按 Ctrl+C 停止伺服器")
     print("=" * 55)
+
+    # 初始化 PAD token（若未設環境變數則自動產生並印出）
+    init_pad_token()
+
+    # 確保預設 admin 帳號存在
+    from storage import load_data, save_data
+    from auth import ensure_default_admin
+    d = load_data()
+    ensure_default_admin(d)
+    save_data(d)
 
     server = HTTPServer(("0.0.0.0", PORT), Handler)
     try:
