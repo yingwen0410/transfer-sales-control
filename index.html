@@ -32,18 +32,25 @@
     --radius-sm: 6px;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-800); min-height: 100vh; font-size: 14px; line-height: 1.6; }
+  body {
+    /* 完全不依賴外部字型，使用系統字型 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei",
+                 "PingFang TC", "Noto Sans TC", sans-serif;
+    background: var(--gray-50); color: var(--gray-800);
+    min-height: 100vh; font-size: 14px; line-height: 1.6;
+  }
 
+  /* ── Header ── */
   .app-header { background: var(--navy); padding: 0 28px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
   .app-header h1 { color: var(--white); font-size: 16px; font-weight: 700; letter-spacing: .5px; display: flex; align-items: center; gap: 10px; }
-  .app-header h1 span.badge { background: var(--blue); font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .badge { background: var(--blue); font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
   .header-actions { display: flex; gap: 10px; align-items: center; }
   .pad-status-banner { font-size: 12px; color: rgba(255,255,255,.7); display: flex; align-items: center; gap: 6px; }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
 
-  .app-body { display: grid; grid-template-columns: 340px 1fr; gap: 0; min-height: calc(100vh - 56px); }
-
+  /* ── Layout ── */
+  .app-body { display: grid; grid-template-columns: 340px 1fr; min-height: calc(100vh - 56px); }
   .form-panel { background: var(--white); border-right: 1px solid var(--gray-200); overflow-y: auto; position: sticky; top: 56px; height: calc(100vh - 56px); }
   .form-panel-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--gray-100); position: sticky; top: 0; background: var(--white); z-index: 10; }
   .form-panel-header h2 { font-size: 14px; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 8px; }
@@ -51,31 +58,29 @@
   .edit-mode-tag.visible { display: inline-block; }
   .form-body { padding: 16px 24px 100px; }
 
+  /* ── Form ── */
   .form-section { margin-bottom: 20px; }
-  .section-title { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 1px; padding: 6px 0 8px; border-bottom: 1px solid var(--gray-100); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .section-title { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 1px; padding: 6px 0 8px; border-bottom: 1px solid var(--gray-100); margin-bottom: 12px; }
   .form-row { margin-bottom: 12px; display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: start; }
   .form-label { font-size: 12px; font-weight: 600; color: var(--gray-600); padding-top: 8px; line-height: 1.3; }
   .form-label .req { color: var(--red); margin-left: 2px; }
   .form-label .auto { font-size: 10px; font-weight: 500; color: var(--teal); display: block; margin-top: 1px; }
-
-  input, select {
-    width: 100%; padding: 7px 10px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
-    font-family: inherit; font-size: 13px; color: var(--gray-800); background: var(--white);
-    transition: border-color .15s, box-shadow .15s; outline: none;
-  }
+  input, select { width: 100%; padding: 7px 10px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; color: var(--gray-800); background: var(--white); transition: border-color .15s, box-shadow .15s; outline: none; }
   input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(45,91,227,.12); }
   input.auto-field { background: var(--teal-lt); color: var(--teal); border-color: rgba(13,148,136,.2); font-weight: 600; cursor: default; }
   input.invoice-field { background: var(--red-lt); border-color: rgba(220,38,38,.25); font-weight: 600; }
   input.invoice-field:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,.12); }
 
-  .batch-grid { display: grid; grid-template-columns: 1fr 80px; gap: 6px; margin-bottom: 6px; align-items: center; }
+  /* ── Batch ── */
+  .batch-grid { display: grid; grid-template-columns: 1fr 80px; gap: 6px; margin-bottom: 6px; }
   .batch-label { font-size: 11px; font-weight: 600; color: var(--purple); padding: 4px 0 2px; }
   .batch-validation { margin-top: 8px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; text-align: center; background: var(--gray-100); color: var(--gray-600); }
   .batch-validation.ok    { background: var(--green-lt); color: var(--green); }
   .batch-validation.error { background: var(--red-lt);   color: var(--red); }
 
+  /* ── Buttons ── */
   .form-footer { position: sticky; bottom: 0; background: var(--white); border-top: 1px solid var(--gray-100); padding: 14px 24px; display: flex; gap: 8px; }
-  .btn { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .btn { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
   .btn-primary { background: var(--blue); color: white; flex: 1; justify-content: center; }
   .btn-primary:hover { background: #1e4dd4; }
   .btn-success { background: var(--green); color: white; flex: 1; justify-content: center; }
@@ -85,17 +90,19 @@
   .btn-danger { background: var(--red-lt); color: var(--red); border: 1px solid rgba(220,38,38,.2); }
   .btn-danger:hover { background: var(--red); color: white; }
 
+  /* ── List panel ── */
   .list-panel { padding: 24px 28px; overflow-y: auto; }
   .list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; gap: 16px; flex-wrap: wrap; }
   .list-header h2 { font-size: 15px; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 8px; }
   .record-count { background: var(--gray-200); color: var(--gray-600); font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
   .search-bar { display: flex; gap: 8px; flex: 1; max-width: 520px; }
-  .search-bar input { flex: 1; padding: 8px 14px; border-radius: 20px; font-size: 13px; }
-  .filter-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .search-bar input { flex: 1; padding: 8px 14px; border-radius: 20px; }
+  .filter-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
   .tab { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--gray-200); background: var(--white); color: var(--gray-600); transition: all .15s; }
   .tab:hover { border-color: var(--blue); color: var(--blue); }
   .tab.active { background: var(--blue); color: white; border-color: var(--blue); }
 
+  /* ── Record cards ── */
   .records-list { display: flex; flex-direction: column; gap: 10px; }
   .record-card { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius); padding: 16px 18px; transition: all .15s; }
   .record-card:hover { border-color: var(--blue); box-shadow: var(--shadow); }
@@ -109,17 +116,17 @@
   .batch-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
   .batch-pill { background: var(--purple-lt); color: var(--purple); border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; font-family: monospace; }
   .pad-badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-  .pad-badge.pending  { background: var(--amber-lt);  color: var(--amber); }
-  .pad-badge.done     { background: var(--green-lt);  color: var(--green); }
-  .pad-badge.running  { background: var(--blue-lt);   color: var(--blue); }
-  .pad-badge.error    { background: var(--red-lt);    color: var(--red); }
-  .pad-badge.modified { background: var(--amber-lt);  color: #b45309; }
+  .pad-badge.pending  { background: var(--amber-lt); color: var(--amber); }
+  .pad-badge.done     { background: var(--green-lt); color: var(--green); }
+  .pad-badge.running  { background: var(--blue-lt);  color: var(--blue); }
+  .pad-badge.error    { background: var(--red-lt);   color: var(--red); }
+  .pad-badge.modified { background: var(--amber-lt); color: #b45309; }
   .flag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
   .flag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--gray-100); color: var(--gray-400); }
   .flag.done { background: var(--green-lt); color: var(--green); }
   .flag.wait { background: var(--amber-lt); color: var(--amber); }
   .record-actions { display: flex; gap: 6px; justify-content: flex-end; border-top: 1px solid var(--gray-100); padding-top: 10px; margin-top: 4px; }
-  .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: all .15s; display: flex; align-items: center; gap: 4px; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: all .15s; display: inline-flex; align-items: center; gap: 4px; }
   .btn-sm-edit   { background: var(--blue-lt); color: var(--blue); }
   .btn-sm-edit:hover   { background: var(--blue); color: white; }
   .btn-sm-delete { background: var(--red-lt); color: var(--red); }
@@ -130,6 +137,7 @@
   .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
   .empty-state h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--gray-600); }
 
+  /* ── Toast ── */
   .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 999; }
   .toast { padding: 12px 18px; border-radius: var(--radius); font-size: 13px; font-weight: 600; color: white; box-shadow: var(--shadow-lg); animation: slideIn .25s ease; max-width: 340px; display: flex; align-items: center; gap: 8px; }
   .toast.success { background: var(--green); }
@@ -137,13 +145,14 @@
   .toast.info    { background: var(--blue); }
   @keyframes slideIn { from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1} }
 
+  /* ── Modal ── */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--white); border-radius: var(--radius); padding: 28px; max-width: 420px; width: 90%; box-shadow: var(--shadow-lg); animation: fadeUp .2s ease; }
   @keyframes fadeUp { from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1} }
   .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--navy); }
   .modal p  { font-size: 13px; color: var(--gray-600); line-height: 1.7; margin-bottom: 20px; }
-  .modal-info { background: var(--gray-50); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 16px; font-size: 12px; line-height: 1.8; color: var(--gray-800); }
+  .modal-info { background: var(--gray-50); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 16px; font-size: 12px; line-height: 1.8; }
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
   .params-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-100); gap: 12px; }
   .params-row:last-child { border-bottom: none; }
@@ -152,7 +161,7 @@
   .params-input { width: 110px; text-align: center; font-weight: 700; font-size: 14px; }
   .params-highlight { background: #fffde7; border-color: var(--amber) !important; }
 
-  /* 主檔管理 */
+  /* ── 主檔管理 ── */
   .master-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
   .master-tab { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--gray-200); background: var(--white); color: var(--gray-600); transition: all .15s; }
   .master-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
@@ -164,13 +173,13 @@
   .master-table tr:hover td { background: var(--gray-50); }
   .master-empty { text-align: center; padding: 32px; color: var(--gray-400); font-size: 13px; }
 
-  /* Autocomplete */
+  /* ── Autocomplete ── */
   .autocomplete-wrap { position: relative; }
   .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; z-index: 50; background: white; border: 1.5px solid var(--blue); border-radius: 6px; box-shadow: var(--shadow); max-height: 180px; overflow-y: auto; display: none; }
   .autocomplete-list.open { display: block; }
   .autocomplete-item { padding: 8px 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--gray-100); }
   .autocomplete-item:last-child { border-bottom: none; }
-  .autocomplete-item:hover { background: var(--blue-lt); }
+  .autocomplete-item:hover, .autocomplete-item.focused { background: var(--blue-lt); }
   .autocomplete-sub { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
 
   ::-webkit-scrollbar { width: 6px; }
@@ -181,15 +190,9 @@
 <body>
 
 <header class="app-header">
-  <h1>
-    📋 移轉銷貨主控系統
-    <span class="badge">v2.1</span>
-  </h1>
+  <h1>📋 移轉銷貨主控系統 <span class="badge">v2.1</span></h1>
   <div class="header-actions">
-    <div class="pad-status-banner">
-      <div class="dot"></div>
-      PAD 自動讀取中
-    </div>
+    <div class="pad-status-banner"><div class="dot"></div>PAD 自動讀取中</div>
     <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" id="masterBtn">📂 主檔管理</button>
     <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" id="paramsBtn">⚙️ 參數設定</button>
   </div>
@@ -197,18 +200,15 @@
 
 <div class="app-body">
 
-  <!-- ── 左側：表單 ── -->
+  <!-- ── 左側表單 ── -->
   <div class="form-panel">
     <div class="form-panel-header">
-      <h2>
-        ✏️ <span id="formTitle">新增交易</span>
+      <h2>✏️ <span id="formTitle">新增交易</span>
         <span class="edit-mode-tag" id="editModeTag">修改模式</span>
       </h2>
     </div>
-
     <div class="form-body">
 
-      <!-- 客戶資訊 -->
       <div class="form-section">
         <div class="section-title">👤 客戶資訊</div>
         <div class="form-row">
@@ -232,7 +232,6 @@
         </div>
       </div>
 
-      <!-- 品號資訊 -->
       <div class="form-section">
         <div class="section-title">📦 品號資訊</div>
         <div class="form-row">
@@ -252,7 +251,6 @@
         </div>
       </div>
 
-      <!-- 數量與單價 -->
       <div class="form-section">
         <div class="section-title">💰 數量與單價</div>
         <div class="form-row">
@@ -273,7 +271,6 @@
         </div>
       </div>
 
-      <!-- 日期資訊 -->
       <div class="form-section">
         <div class="section-title">📅 日期資訊</div>
         <div class="form-row">
@@ -301,7 +298,6 @@
         </div>
       </div>
 
-      <!-- 發票資訊 -->
       <div class="form-section">
         <div class="section-title" style="color:var(--red);">🧾 發票資訊 ⚠️</div>
         <div class="form-row">
@@ -318,7 +314,6 @@
         <div id="cross_month_hint" style="display:none;background:var(--amber-lt);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--amber);font-weight:600;margin-top:6px;"></div>
       </div>
 
-      <!-- 批號明細 -->
       <div class="form-section">
         <div class="section-title" style="color:var(--purple);">🏷️ 批號明細（最多4批）</div>
         <div style="display:grid;grid-template-columns:1fr 80px;gap:6px;margin-bottom:4px;">
@@ -329,26 +324,22 @@
         <div class="batch-validation" id="batch_validation">請填寫批號與數量</div>
       </div>
 
-    </div>
-
+    </div><!-- /form-body -->
     <div class="form-footer">
       <button class="btn btn-ghost" id="clearBtn">🗑️ 清除</button>
       <button class="btn btn-success" id="submitBtn">✅ 新增到清單</button>
     </div>
   </div>
 
-  <!-- ── 右側：清單 ── -->
+  <!-- ── 右側清單 ── -->
   <div class="list-panel">
     <div class="list-header">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <h2>📋 交易清單 <span class="record-count" id="recordCount">0 筆</span></h2>
-      </div>
+      <h2>📋 交易清單 <span class="record-count" id="recordCount">0 筆</span></h2>
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="🔍 搜尋客戶名稱、客戶單號、品號…">
       </div>
     </div>
-
-    <div class="filter-tabs" style="margin-bottom:16px;">
+    <div class="filter-tabs">
       <button class="tab active" data-status="">全部</button>
       <button class="tab" data-status="待建單">待建單</button>
       <button class="tab" data-status="建單中">建單中</button>
@@ -356,26 +347,22 @@
       <button class="tab" data-status="錯誤">錯誤</button>
       <button class="tab" data-status="待建單（已修改）">已修改</button>
     </div>
-
     <div class="records-list" id="recordsList">
-      <div class="empty-state">
-        <div class="icon">📭</div>
-        <h3>載入中…</h3>
-      </div>
+      <div class="empty-state"><div class="icon">📭</div><h3>載入中…</h3></div>
     </div>
   </div>
 
-</div>
+</div><!-- /app-body -->
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- 刪除確認 modal -->
+<!-- 刪除 modal -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal">
     <h3>🗑️ 確認刪除</h3>
     <p>刪除後無法還原。若此筆 ERP 已建立單據，請另行處理。</p>
     <div class="modal-info" id="deleteInfo"></div>
-    <div id="deleteWarning" style="background:var(--red-lt);border-radius:6px;padding:10px 12px;font-size:12px;font-weight:600;color:var(--red);margin-bottom:14px;display:none;"></div>
+    <div id="deleteWarning" style="display:none;background:var(--red-lt);border-radius:6px;padding:10px 12px;font-size:12px;font-weight:600;color:var(--red);margin-bottom:14px;"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="deleteCancelBtn">取消</button>
       <button class="btn btn-danger" id="deleteConfirmBtn">確認刪除</button>
@@ -383,7 +370,7 @@
   </div>
 </div>
 
-<!-- 參數設定 modal -->
+<!-- 參數 modal -->
 <div class="modal-overlay" id="paramsModal">
   <div class="modal" style="max-width:500px;">
     <h3>⚙️ 參數設定</h3>
@@ -396,7 +383,7 @@
   </div>
 </div>
 
-<!-- 主檔管理 modal -->
+<!-- 主檔 modal -->
 <div class="modal-overlay" id="masterModal">
   <div class="modal" style="max-width:680px;width:95%;">
     <h3>📂 主檔管理</h3>
@@ -405,12 +392,9 @@
       <button class="master-tab active" id="tab_parts">📦 品號對照表</button>
       <button class="master-tab" id="tab_customers">👤 客戶清單</button>
     </div>
-
-    <!-- 品號對照表 -->
     <div class="master-panel active" id="master_parts">
-      <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <input type="text" id="parts_search" placeholder="搜尋品號或品名…"
-          style="flex:1;padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:13px;">
+      <div style="margin-bottom:10px;">
+        <input type="text" id="parts_search" placeholder="搜尋品號或品名…" style="padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:13px;width:100%;">
       </div>
       <div style="max-height:260px;overflow-y:auto;">
         <table class="master-table">
@@ -425,16 +409,13 @@
           <input type="text" id="new_ju_no"  placeholder="鉅侖品號">
           <input type="text" id="new_part_name" placeholder="品名">
           <input type="text" id="new_part_spec" placeholder="規格">
-          <button class="btn btn-primary" style="white-space:nowrap;padding:7px 14px;" id="addPartBtn">新增</button>
+          <button class="btn btn-primary" style="padding:7px 14px;" id="addPartBtn">新增</button>
         </div>
       </div>
     </div>
-
-    <!-- 客戶清單 -->
     <div class="master-panel" id="master_customers">
-      <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <input type="text" id="customers_search" placeholder="搜尋客戶名稱或代號…"
-          style="flex:1;padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:13px;">
+      <div style="margin-bottom:10px;">
+        <input type="text" id="customers_search" placeholder="搜尋客戶名稱或代號…" style="padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:13px;width:100%;">
       </div>
       <div style="max-height:260px;overflow-y:auto;">
         <table class="master-table">
@@ -448,11 +429,10 @@
           <input type="text" id="new_cust_name" placeholder="客戶名稱 *">
           <input type="text" id="new_cust_code" placeholder="鉅侖客戶代號">
           <input type="text" id="new_cust_note" placeholder="備註">
-          <button class="btn btn-primary" style="white-space:nowrap;padding:7px 14px;" id="addCustomerBtn">新增</button>
+          <button class="btn btn-primary" style="padding:7px 14px;" id="addCustomerBtn">新增</button>
         </div>
       </div>
     </div>
-
     <div class="modal-actions" style="margin-top:16px;">
       <button class="btn btn-ghost" id="masterCloseBtn">關閉</button>
     </div>
@@ -462,38 +442,39 @@
 <script>
 'use strict';
 
-// ── 全域狀態 ─────────────────────────────────────────────────────────────────
-let allRecords = [];
-let currentParams = {};
-let editingId = null;
-let deleteTargetId = null;
+// ══════════════════════════════════════════════════════════════════
+//  全域狀態
+// ══════════════════════════════════════════════════════════════════
+let allRecords       = [];
+let currentParams    = {};
+let editingId        = null;
+let deleteTargetId   = null;
 let currentStatusFilter = '';
-let PARTS_CACHE    = [];
-let CUSTOMERS_CACHE = [];
+let PARTS_CACHE      = [];
+let CUSTOMERS_CACHE  = [];
 
-// ── 輸出編碼（XSS 防護）─────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  XSS 防護：所有動態文字一律用 textContent，此函數僅供 data-* 備用
+// ══════════════════════════════════════════════════════════════════
 function esc(str) {
-  if (str == null) return '';
-  return String(str)
-    .replace(/&/g,  '&amp;')
-    .replace(/</g,  '&lt;')
-    .replace(/>/g,  '&gt;')
-    .replace(/"/g,  '&quot;')
-    .replace(/'/g,  '&#39;');
+  return String(str ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// ── API helpers ───────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  API
+// ══════════════════════════════════════════════════════════════════
 async function apiFetch(path, method = 'GET', body = null) {
   const opts = { method, headers: { 'Content-Type': 'application/json' } };
   if (body !== null) opts.body = JSON.stringify(body);
   const res = await fetch(path, opts);
-  if (!res.ok && res.status !== 404 && res.status !== 409) {
-    throw new Error(`HTTP ${res.status}: ${path}`);
-  }
   return res.json();
 }
 
-// ── 主檔快取載入 ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  主檔快取
+// ══════════════════════════════════════════════════════════════════
 async function loadMasterCache() {
   try {
     const [pd, cd] = await Promise.all([
@@ -502,76 +483,71 @@ async function loadMasterCache() {
     ]);
     PARTS_CACHE     = Array.isArray(pd.parts)     ? pd.parts     : [];
     CUSTOMERS_CACHE = Array.isArray(cd.customers) ? cd.customers : [];
-  } catch(e) {
-    console.warn('主檔快取載入失敗', e);
-  }
+  } catch(e) { console.warn('主檔快取載入失敗', e); }
 }
 
-// ── 初始化批號列（用 DOM API，避免 innerHTML 事件字串）────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  批號列（DOM API，無 innerHTML 事件字串）
+// ══════════════════════════════════════════════════════════════════
 function initBatchRows() {
   const container = document.getElementById('batch_rows');
   container.innerHTML = '';
   for (let i = 1; i <= 4; i++) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'batch-grid';
-    wrapper.style.marginBottom = '6px';
+    const wrap = document.createElement('div');
+    wrap.className = 'batch-grid';
+    wrap.style.marginBottom = '6px';
 
-    const leftDiv = document.createElement('div');
+    // 左：批號輸入
+    const left = document.createElement('div');
     const lbl1 = document.createElement('div');
     lbl1.className = 'batch-label';
     lbl1.textContent = `批號 ${i}`;
-    const noInput = document.createElement('input');
-    noInput.type = 'text';
-    noInput.id = `f_batch_no_${i}`;
-    noInput.placeholder = '批號文字';
-    noInput.addEventListener('input', validateBatch);
-    leftDiv.appendChild(lbl1);
-    leftDiv.appendChild(noInput);
+    const noInp = document.createElement('input');
+    noInp.type = 'text'; noInp.id = `f_batch_no_${i}`; noInp.placeholder = '批號文字';
+    noInp.addEventListener('input', validateBatch);
+    left.appendChild(lbl1); left.appendChild(noInp);
 
-    const rightDiv = document.createElement('div');
+    // 右：數量輸入
+    const right = document.createElement('div');
     const lbl2 = document.createElement('div');
-    lbl2.className = 'batch-label';
-    lbl2.style.textAlign = 'center';
-    lbl2.textContent = '數量';
-    const qtyInput = document.createElement('input');
-    qtyInput.type = 'number';
-    qtyInput.id = `f_batch_qty_${i}`;
-    qtyInput.min = '0';
-    qtyInput.placeholder = '0';
-    qtyInput.style.textAlign = 'center';
-    qtyInput.addEventListener('input', validateBatch);
-    rightDiv.appendChild(lbl2);
-    rightDiv.appendChild(qtyInput);
+    lbl2.className = 'batch-label'; lbl2.style.textAlign = 'center'; lbl2.textContent = '數量';
+    const qInp = document.createElement('input');
+    qInp.type = 'number'; qInp.id = `f_batch_qty_${i}`; qInp.min = '0'; qInp.placeholder = '0';
+    qInp.style.textAlign = 'center';
+    qInp.addEventListener('input', validateBatch);
+    right.appendChild(lbl2); right.appendChild(qInp);
 
-    wrapper.appendChild(leftDiv);
-    wrapper.appendChild(rightDiv);
-    container.appendChild(wrapper);
+    wrap.appendChild(left); wrap.appendChild(right);
+    container.appendChild(wrap);
   }
 }
 
-// ── 表單欄位事件綁定（不用 inline onclick）───────────────────────────────────
-function bindFormEvents() {
-  document.getElementById('f_customer_name').addEventListener('input',  onCustomerInput);
-  document.getElementById('f_customer_name').addEventListener('focus',  showCustomerDropdown);
-  document.getElementById('f_customer_name').addEventListener('blur',   () => hideDropdownDelay('customer_ac'));
+// ══════════════════════════════════════════════════════════════════
+//  事件綁定（全部集中，零 inline handler）
+// ══════════════════════════════════════════════════════════════════
+function bindEvents() {
+  // 表單欄位
+  document.getElementById('f_customer_name').addEventListener('input', onCustomerInput);
+  document.getElementById('f_customer_name').addEventListener('focus', showCustomerDropdown);
+  document.getElementById('f_customer_name').addEventListener('blur',  () => hideDropdownDelay('customer_ac'));
   document.getElementById('f_customer_order_no').addEventListener('input', updateRemark);
-
-  document.getElementById('f_xin_part_no').addEventListener('input',  onPartNoInput);
-  document.getElementById('f_xin_part_no').addEventListener('focus',  showPartDropdown);
-  document.getElementById('f_xin_part_no').addEventListener('blur',   () => hideDropdownDelay('part_ac'));
-
+  document.getElementById('f_xin_part_no').addEventListener('input', onPartNoInput);
+  document.getElementById('f_xin_part_no').addEventListener('focus', showPartDropdown);
+  document.getElementById('f_xin_part_no').addEventListener('blur',  () => hideDropdownDelay('part_ac'));
   document.getElementById('f_qty').addEventListener('input', validateBatch);
   document.getElementById('f_sale_price').addEventListener('input', calcTransferPrice);
   document.getElementById('f_ship_date').addEventListener('input', onShipDateChange);
   document.getElementById('f_cross_month').addEventListener('change', onCrossMonthChange);
   document.getElementById('f_invoice_date').addEventListener('input', updateCrossMonthHint);
 
+  // 按鈕
   document.getElementById('clearBtn').addEventListener('click', clearForm);
   document.getElementById('submitBtn').addEventListener('click', submitForm);
   document.getElementById('masterBtn').addEventListener('click', openMaster);
   document.getElementById('paramsBtn').addEventListener('click', openParams);
 
-  document.getElementById('searchInput').addEventListener('input', filterRecords);
+  // 搜尋
+  document.getElementById('searchInput').addEventListener('input', () => loadRecords());
 
   // 篩選 tabs
   document.querySelectorAll('.filter-tabs .tab').forEach(tab => {
@@ -583,84 +559,28 @@ function bindFormEvents() {
     });
   });
 
-  // Modal 關閉
+  // Modal 按鈕
   document.getElementById('deleteCancelBtn').addEventListener('click',  () => closeModal('deleteModal'));
   document.getElementById('deleteConfirmBtn').addEventListener('click', confirmDelete);
   document.getElementById('paramsCancelBtn').addEventListener('click',  () => closeModal('paramsModal'));
   document.getElementById('paramsSaveBtn').addEventListener('click',    saveParams);
   document.getElementById('masterCloseBtn').addEventListener('click',   () => closeModal('masterModal'));
-
-  // 主檔 tabs
-  document.getElementById('tab_parts').addEventListener('click', function() { switchMasterTab('parts', this); });
+  document.getElementById('tab_parts').addEventListener('click',     function() { switchMasterTab('parts',     this); });
   document.getElementById('tab_customers').addEventListener('click', function() { switchMasterTab('customers', this); });
-
-  // 主檔新增按鈕
-  document.getElementById('addPartBtn').addEventListener('click', addPart);
+  document.getElementById('addPartBtn').addEventListener('click',     addPart);
   document.getElementById('addCustomerBtn').addEventListener('click', addCustomer);
-
-  // 主檔搜尋
-  document.getElementById('parts_search').addEventListener('input', loadMasterParts);
+  document.getElementById('parts_search').addEventListener('input',     loadMasterParts);
   document.getElementById('customers_search').addEventListener('input', loadMasterCustomers);
 
-  // 點擊 modal 背景關閉
+  // Modal 點背景關閉
   document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
   });
 }
 
-// ── 客戶 autocomplete ─────────────────────────────────────────────────────────
-function showCustomerDropdown() {
-  const q = document.getElementById('f_customer_name').value.trim().toLowerCase();
-  const matches = CUSTOMERS_CACHE.filter(c =>
-    !q || c.name.toLowerCase().includes(q) || (c.code || '').toLowerCase().includes(q)
-  ).slice(0, 8);
-  renderDropdown('customer_ac', matches.map(c => ({
-    main: c.name,
-    sub:  c.code ? `代號：${c.code}` : '',
-    select: () => {
-      document.getElementById('f_customer_name').value = c.name;
-      document.getElementById('f_customer_code').value = c.code || '';
-      updateRemark();
-      hideDropdown('customer_ac');
-    }
-  })));
-}
-
-function onCustomerInput() {
-  showCustomerDropdown();
-  const name  = document.getElementById('f_customer_name').value.trim();
-  const found = CUSTOMERS_CACHE.find(c => c.name === name);
-  document.getElementById('f_customer_code').value = found ? (found.code || '') : '';
-  updateRemark();
-}
-
-// ── 品號 autocomplete ─────────────────────────────────────────────────────────
-function showPartDropdown() {
-  const q = document.getElementById('f_xin_part_no').value.trim().toLowerCase();
-  const matches = PARTS_CACHE.filter(p =>
-    !q || p.xin_no.toLowerCase().includes(q) || (p.name || '').toLowerCase().includes(q)
-  ).slice(0, 8);
-  renderDropdown('part_ac', matches.map(p => ({
-    main: p.xin_no,
-    sub:  [p.name, p.spec].filter(Boolean).join('　'),
-    select: () => {
-      document.getElementById('f_xin_part_no').value = p.xin_no;
-      document.getElementById('f_ju_part_no').value  = p.ju_no  || '';
-      document.getElementById('f_part_name').value   = p.name   || '';
-      hideDropdown('part_ac');
-    }
-  })));
-}
-
-function onPartNoInput() {
-  showPartDropdown();
-  const no    = document.getElementById('f_xin_part_no').value.trim();
-  const found = PARTS_CACHE.find(p => p.xin_no === no);
-  document.getElementById('f_ju_part_no').value = found ? (found.ju_no || '') : '';
-  document.getElementById('f_part_name').value  = found ? (found.name  || '') : '';
-}
-
-// ── 安全的下拉選單渲染（用 DOM API，不用 innerHTML + onclick 字串）─────────
+// ══════════════════════════════════════════════════════════════════
+//  Autocomplete（DOM API，textContent）
+// ══════════════════════════════════════════════════════════════════
 function renderDropdown(id, items) {
   const el = document.getElementById(id);
   el.innerHTML = '';
@@ -669,40 +589,77 @@ function renderDropdown(id, items) {
     const div = document.createElement('div');
     div.className = 'autocomplete-item';
     div.setAttribute('role', 'option');
-    const mainDiv = document.createElement('div');
-    mainDiv.textContent = item.main;       // textContent 自動 escape
-    div.appendChild(mainDiv);
+    const main = document.createElement('div');
+    main.textContent = item.main;
+    div.appendChild(main);
     if (item.sub) {
-      const subDiv = document.createElement('div');
-      subDiv.className = 'autocomplete-sub';
-      subDiv.textContent = item.sub;
-      div.appendChild(subDiv);
+      const sub = document.createElement('div');
+      sub.className = 'autocomplete-sub';
+      sub.textContent = item.sub;
+      div.appendChild(sub);
     }
-    div.addEventListener('mousedown', (e) => {
-      e.preventDefault();                   // 防止 blur 先觸發
-      item.select();
-    });
+    div.addEventListener('mousedown', e => { e.preventDefault(); item.select(); });
     el.appendChild(div);
   });
   el.classList.add('open');
 }
+function hideDropdown(id) { document.getElementById(id)?.classList.remove('open'); }
+function hideDropdownDelay(id) { setTimeout(() => hideDropdown(id), 150); }
 
-function hideDropdown(id) {
-  document.getElementById(id)?.classList.remove('open');
+function showCustomerDropdown() {
+  const q = document.getElementById('f_customer_name').value.trim().toLowerCase();
+  const matches = CUSTOMERS_CACHE
+    .filter(c => !q || c.name.toLowerCase().includes(q) || (c.code||'').toLowerCase().includes(q))
+    .slice(0, 8);
+  renderDropdown('customer_ac', matches.map(c => ({
+    main: c.name, sub: c.code ? `代號：${c.code}` : '',
+    select: () => {
+      document.getElementById('f_customer_name').value = c.name;
+      document.getElementById('f_customer_code').value = c.code || '';
+      updateRemark(); hideDropdown('customer_ac');
+    }
+  })));
+}
+function onCustomerInput() {
+  showCustomerDropdown();
+  const name  = document.getElementById('f_customer_name').value.trim();
+  const found = CUSTOMERS_CACHE.find(c => c.name === name);
+  document.getElementById('f_customer_code').value = found ? (found.code||'') : '';
+  updateRemark();
 }
 
-function hideDropdownDelay(id) {
-  setTimeout(() => hideDropdown(id), 150);
+function showPartDropdown() {
+  const q = document.getElementById('f_xin_part_no').value.trim().toLowerCase();
+  const matches = PARTS_CACHE
+    .filter(p => !q || p.xin_no.toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q))
+    .slice(0, 8);
+  renderDropdown('part_ac', matches.map(p => ({
+    main: p.xin_no, sub: [p.name, p.spec].filter(Boolean).join('　'),
+    select: () => {
+      document.getElementById('f_xin_part_no').value = p.xin_no;
+      document.getElementById('f_ju_part_no').value  = p.ju_no  || '';
+      document.getElementById('f_part_name').value   = p.name   || '';
+      hideDropdown('part_ac');
+    }
+  })));
+}
+function onPartNoInput() {
+  showPartDropdown();
+  const no    = document.getElementById('f_xin_part_no').value.trim();
+  const found = PARTS_CACHE.find(p => p.xin_no === no);
+  document.getElementById('f_ju_part_no').value = found ? (found.ju_no||'') : '';
+  document.getElementById('f_part_name').value  = found ? (found.name ||'') : '';
 }
 
-// ── 備註組合 ─────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  表單計算邏輯
+// ══════════════════════════════════════════════════════════════════
 function updateRemark() {
   const name    = document.getElementById('f_customer_name').value.trim();
   const orderNo = document.getElementById('f_customer_order_no').value.trim();
   document.getElementById('f_remark').value = (name && orderNo) ? `${name} ${orderNo}` : '';
 }
 
-// ── 移轉單價計算（修復：之前此函數定義遺失）─────────────────────────────────
 function calcTransferPrice() {
   const ratio    = currentParams.transfer_ratio || 0;
   const price    = parseFloat(document.getElementById('f_sale_price').value) || 0;
@@ -710,7 +667,6 @@ function calcTransferPrice() {
   document.getElementById('f_transfer_price').value = transfer ? `$${transfer.toLocaleString()}` : '';
 }
 
-// ── 出貨日變動 ────────────────────────────────────────────────────────────────
 function onShipDateChange() {
   const shipDate = document.getElementById('f_ship_date').value;
   if (shipDate) {
@@ -736,8 +692,8 @@ function onCrossMonthChange() {
 }
 
 function updateCrossMonthHint() {
-  const hint    = document.getElementById('cross_month_hint');
-  const isCross = document.getElementById('f_cross_month').value === '是';
+  const hint     = document.getElementById('cross_month_hint');
+  const isCross  = document.getElementById('f_cross_month').value === '是';
   const shipDate = document.getElementById('f_ship_date').value;
   const invDate  = document.getElementById('f_invoice_date').value;
   if (isCross && shipDate && invDate) {
@@ -750,10 +706,9 @@ function updateCrossMonthHint() {
   }
 }
 
-// ── 批號驗證 ─────────────────────────────────────────────────────────────────
 function validateBatch() {
-  const qty = parseInt(document.getElementById('f_qty').value) || 0;
-  let total = 0;
+  const qty   = parseInt(document.getElementById('f_qty').value) || 0;
+  let total   = 0;
   for (let i = 1; i <= 4; i++) {
     total += parseInt(document.getElementById(`f_batch_qty_${i}`).value) || 0;
   }
@@ -766,12 +721,14 @@ function validateBatch() {
     el.textContent = `✅ 批號合計 ${total} = 訂單數量 ${qty}`;
   } else {
     el.className = 'batch-validation error';
-    el.textContent = `⚠️ 批號合計 ${total} ≠ 訂單數量 ${qty}（差 ${total - qty > 0 ? '+' : ''}${total - qty}）`;
+    el.textContent = `⚠️ 批號合計 ${total} ≠ 訂單數量 ${qty}（差 ${total-qty > 0?'+':''}${total-qty}）`;
   }
   return total === qty && total > 0;
 }
 
-// ── 取得表單資料 ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  表單資料 & 送出
+// ══════════════════════════════════════════════════════════════════
 function getFormData() {
   const batches = [];
   for (let i = 1; i <= 4; i++) {
@@ -801,11 +758,11 @@ function getFormData() {
     invoice_no:        document.getElementById('f_invoice_no').value.trim(),
     invoice_type:      document.getElementById('f_invoice_type').value,
     batches,
-    batch_total:       batches.reduce((s, b) => s + b.qty, 0),
+    batch_total: batches.reduce((s,b) => s+b.qty, 0),
   };
 }
 
-function validateForm(data) {
+function validateFormClient(data) {
   const errors = [];
   if (!data.customer_name)     errors.push('客戶名稱');
   if (!data.customer_order_no) errors.push('客戶單號');
@@ -821,37 +778,26 @@ function validateForm(data) {
 
 async function submitForm() {
   const data   = getFormData();
-  const errors = validateForm(data);
+  const errors = validateFormClient(data);
   if (errors.length) {
-    showToast(`以下欄位未填或有誤：${errors.join('、')}`, 'error');
-    return;
+    showToast(`以下欄位未填或有誤：${errors.join('、')}`, 'error'); return;
   }
   try {
     if (editingId) {
       const res = await apiFetch(`/api/records/${editingId}`, 'PUT', data);
-      if (res.success) {
-        showToast('✅ 修改已儲存', 'success');
-        clearForm();
-        loadRecords();
-      } else {
-        showToast('儲存失敗：' + (res.error || '未知錯誤'), 'error');
-      }
+      if (res.success) { showToast('✅ 修改已儲存', 'success'); clearForm(); loadRecords(); }
+      else showToast('儲存失敗：' + (res.error || '未知錯誤'), 'error');
     } else {
       const res = await apiFetch('/api/records', 'POST', data);
-      if (res.success) {
-        showToast(`✅ 新增成功：${res.record.txn_id}`, 'success');
-        clearForm();
-        loadRecords();
-      } else {
-        showToast('新增失敗：' + (res.error || '未知錯誤'), 'error');
-      }
+      if (res.success) { showToast(`✅ 新增成功：${res.record.txn_id}`, 'success'); clearForm(); loadRecords(); }
+      else showToast('新增失敗：' + (res.error || '未知錯誤'), 'error');
     }
-  } catch(e) {
-    showToast('網路錯誤，請確認伺服器是否執行中。', 'error');
-  }
+  } catch(e) { showToast('網路錯誤，請確認伺服器是否執行中。', 'error'); }
 }
 
-// ── 載入清單 ──────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  載入 & 渲染清單（全部 DOM API，textContent）
+// ══════════════════════════════════════════════════════════════════
 async function loadRecords() {
   try {
     const q   = document.getElementById('searchInput').value;
@@ -866,262 +812,197 @@ async function loadRecords() {
         (currentParams.transfer_ratio * 100).toFixed(1) + '%';
       calcTransferPrice();
     }
-  } catch(e) {
-    showToast('無法連線到伺服器，請確認 server.py 是否執行中。', 'error');
-  }
+  } catch(e) { showToast('無法連線到伺服器，請確認 server.py 是否執行中。', 'error'); }
 }
 
-// ── 渲染清單（XSS 安全：全部用 textContent / DOM API）────────────────────────
 function renderRecords(records) {
   const list = document.getElementById('recordsList');
   list.innerHTML = '';
 
   if (!records.length) {
-    const es  = document.createElement('div');
-    es.className = 'empty-state';
-    es.innerHTML = '<div class="icon">📭</div>';
-    const h3 = document.createElement('h3');
-    h3.textContent = '沒有資料';
-    const p = document.createElement('p');
-    p.textContent = '新增第一筆交易或調整搜尋條件';
-    es.appendChild(h3);
-    es.appendChild(p);
-    list.appendChild(es);
-    return;
+    const es = document.createElement('div'); es.className = 'empty-state';
+    const ic = document.createElement('div'); ic.className = 'icon'; ic.textContent = '📭';
+    const h3 = document.createElement('h3'); h3.textContent = '沒有資料';
+    const p  = document.createElement('p');  p.textContent  = '新增第一筆交易或調整搜尋條件';
+    es.appendChild(ic); es.appendChild(h3); es.appendChild(p);
+    list.appendChild(es); return;
   }
 
   const PAD_CLASS = {
-    '待建單': 'pending', '已完成': 'done', '建單中': 'running',
-    '錯誤': 'error', '待建單（已修改）': 'modified'
+    '待建單':'pending','已完成':'done','建單中':'running',
+    '錯誤':'error','待建單（已修改）':'modified'
   };
   const FLAG_DEFS = [
-    ['欣豐訂單', 'flag_xin_order'],
-    ['欣豐銷貨', 'flag_xin_sale'],
-    ['鉅侖採購', 'flag_ju_purchase'],
-    ['鉅侖進貨', 'flag_ju_receipt'],
-    ['鉅侖銷貨', 'flag_ju_sale'],
+    ['欣豐訂單','flag_xin_order'],['欣豐銷貨','flag_xin_sale'],
+    ['鉅侖採購','flag_ju_purchase'],['鉅侖進貨','flag_ju_receipt'],['鉅侖銷貨','flag_ju_sale'],
   ];
 
   [...records].reverse().forEach(r => {
     const card = document.createElement('div');
     card.className = 'record-card';
-    card.id = `card_${r.id}`;
 
     // header
-    const header = document.createElement('div');
-    header.className = 'record-card-header';
-
-    const infoDiv = document.createElement('div');
-    const txnDiv  = document.createElement('div');
-    txnDiv.className = 'record-txn';
-    txnDiv.textContent = `${r.txn_id} · ${r.created_at}`;
-    const custDiv = document.createElement('div');
-    custDiv.className = 'record-customer';
-    custDiv.textContent = r.customer_name;
-    const orderDiv = document.createElement('div');
-    orderDiv.className = 'record-order';
-    orderDiv.textContent = r.customer_order_no;
-    infoDiv.appendChild(txnDiv);
-    infoDiv.appendChild(custDiv);
-    infoDiv.appendChild(orderDiv);
-
-    const badge = document.createElement('span');
-    badge.className = `pad-badge ${PAD_CLASS[r.pad_status] || 'pending'}`;
-    badge.textContent = r.pad_status;
-    header.appendChild(infoDiv);
-    header.appendChild(badge);
-    card.appendChild(header);
+    const hdr = document.createElement('div'); hdr.className = 'record-card-header';
+    const inf = document.createElement('div');
+    const txn = document.createElement('div'); txn.className = 'record-txn';
+    txn.textContent = `${r.txn_id} · ${r.created_at}`;
+    const cust = document.createElement('div'); cust.className = 'record-customer';
+    cust.textContent = r.customer_name;
+    const ord = document.createElement('div'); ord.className = 'record-order';
+    ord.textContent = r.customer_order_no;
+    inf.appendChild(txn); inf.appendChild(cust); inf.appendChild(ord);
+    const bdg = document.createElement('span');
+    bdg.className = `pad-badge ${PAD_CLASS[r.pad_status]||'pending'}`;
+    bdg.textContent = r.pad_status;
+    hdr.appendChild(inf); hdr.appendChild(bdg);
+    card.appendChild(hdr);
 
     // meta
-    const meta = document.createElement('div');
-    meta.className = 'record-meta';
-    [
-      ['品號', r.xin_part_no],
-      ['數量', r.qty],
-      ['移轉單價', `$${(r.transfer_price||0).toLocaleString()}`],
-      ['出貨日', r.ship_date || '—'],
+    const meta = document.createElement('div'); meta.className = 'record-meta';
+    [['品號', r.xin_part_no], ['數量', r.qty],
+     ['移轉單價', `$${(r.transfer_price||0).toLocaleString()}`], ['出貨日', r.ship_date||'—']
     ].forEach(([lbl, val]) => {
       const sp = document.createElement('span');
-      sp.textContent = `${lbl} `;
-      const strong = document.createElement('strong');
-      strong.textContent = val;
-      sp.appendChild(strong);
-      meta.appendChild(sp);
+      sp.textContent = lbl + ' ';
+      const st = document.createElement('strong'); st.textContent = val;
+      sp.appendChild(st); meta.appendChild(sp);
     });
     if (r.cross_month === '是') {
       const sp = document.createElement('span');
       sp.style.cssText = 'color:var(--amber);font-weight:700;';
-      sp.textContent = '⚠️ 跨月開票';
-      meta.appendChild(sp);
+      sp.textContent = '⚠️ 跨月開票'; meta.appendChild(sp);
     }
     card.appendChild(meta);
 
     // 批號
-    const batchPills = (r.batches || []).filter(b => b.no);
-    if (batchPills.length) {
-      const pills = document.createElement('div');
-      pills.className = 'batch-pills';
-      batchPills.forEach(b => {
-        const pill = document.createElement('span');
-        pill.className = 'batch-pill';
-        pill.textContent = `${b.no} ×${b.qty}`;
-        pills.appendChild(pill);
+    const validBatches = (r.batches||[]).filter(b=>b.no);
+    if (validBatches.length) {
+      const pills = document.createElement('div'); pills.className = 'batch-pills';
+      validBatches.forEach(b => {
+        const p = document.createElement('span'); p.className = 'batch-pill';
+        p.textContent = `${b.no} ×${b.qty}`; pills.appendChild(p);
       });
       card.appendChild(pills);
     }
 
     // 旗標
-    const flagRow = document.createElement('div');
-    flagRow.className = 'flag-row';
+    const flagRow = document.createElement('div'); flagRow.className = 'flag-row';
     FLAG_DEFS.forEach(([label, key]) => {
       const val = r[key] || '';
       const f   = document.createElement('span');
-      f.className = `flag${val === '是' ? ' done' : val === '待人工' ? ' wait' : ''}`;
-      f.textContent = label + (val === '是' ? ' ✓' : val === '待人工' ? ' ⏳' : '');
+      f.className = `flag${val==='是'?' done':val==='待人工'?' wait':''}`;
+      f.textContent = label + (val==='是'?' ✓':val==='待人工'?' ⏳':'');
       flagRow.appendChild(f);
     });
     card.appendChild(flagRow);
 
     // 操作按鈕
-    const actions = document.createElement('div');
-    actions.className = 'record-actions';
-
-    const flagBtn = document.createElement('button');
-    flagBtn.className = 'btn-sm btn-sm-flag';
-    flagBtn.textContent = r.flag_ju_sale === '是' ? '✓ 鉅侖銷貨已完成' : '⏳ 確認鉅侖銷貨';
+    const acts = document.createElement('div'); acts.className = 'record-actions';
+    const flagBtn = document.createElement('button'); flagBtn.className = 'btn-sm btn-sm-flag';
+    flagBtn.textContent = r.flag_ju_sale==='是' ? '✓ 鉅侖銷貨已完成' : '⏳ 確認鉅侖銷貨';
     flagBtn.addEventListener('click', () => toggleJuSaleFlag(r.id, r.flag_ju_sale));
-
-    const editBtn = document.createElement('button');
-    editBtn.className = 'btn-sm btn-sm-edit';
+    const editBtn = document.createElement('button'); editBtn.className = 'btn-sm btn-sm-edit';
     editBtn.textContent = '✏️ 修改';
     editBtn.addEventListener('click', () => loadEdit(r.id));
-
-    const delBtn = document.createElement('button');
-    delBtn.className = 'btn-sm btn-sm-delete';
+    const delBtn = document.createElement('button'); delBtn.className = 'btn-sm btn-sm-delete';
     delBtn.textContent = '🗑️ 刪除';
     delBtn.addEventListener('click', () => openDeleteModal(r.id));
-
-    actions.appendChild(flagBtn);
-    actions.appendChild(editBtn);
-    actions.appendChild(delBtn);
-    card.appendChild(actions);
+    acts.appendChild(flagBtn); acts.appendChild(editBtn); acts.appendChild(delBtn);
+    card.appendChild(acts);
     list.appendChild(card);
   });
 }
 
-function filterRecords() { loadRecords(); }
-
-// ── 載入修改 ─────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  載入修改
+// ══════════════════════════════════════════════════════════════════
 async function loadEdit(id) {
   try {
     const r = await apiFetch(`/api/records/${id}`);
     if (r.error) { showToast('找不到此筆資料', 'error'); return; }
-
     editingId = id;
     document.getElementById('formTitle').textContent = '修改交易';
     document.getElementById('editModeTag').classList.add('visible');
-    document.getElementById('submitBtn').textContent  = '💾 儲存修改';
-    document.getElementById('submitBtn').className    = 'btn btn-primary';
+    document.getElementById('submitBtn').textContent = '💾 儲存修改';
+    document.getElementById('submitBtn').className   = 'btn btn-primary';
 
-    const fields = {
+    const map = {
       f_customer_name: r.customer_name, f_customer_code: r.customer_code,
       f_customer_order_no: r.customer_order_no, f_remark: r.remark,
-      f_xin_part_no: r.xin_part_no, f_ju_part_no: r.ju_part_no,
-      f_part_name: r.part_name, f_qty: r.qty, f_sale_price: r.sale_price,
+      f_xin_part_no: r.xin_part_no, f_ju_part_no: r.ju_part_no, f_part_name: r.part_name,
+      f_qty: r.qty, f_sale_price: r.sale_price,
       f_delivery_date: r.delivery_date, f_ship_date: r.ship_date,
-      f_month_first_day: r.month_first_day,
-      f_invoice_date: r.invoice_date, f_invoice_no: r.invoice_no,
+      f_month_first_day: r.month_first_day, f_invoice_date: r.invoice_date, f_invoice_no: r.invoice_no,
     };
-    Object.entries(fields).forEach(([id, val]) => {
-      document.getElementById(id).value = val ?? '';
-    });
-    document.getElementById('f_transfer_ratio').value =
-      ((r.transfer_ratio || 0) * 100).toFixed(1) + '%';
-    document.getElementById('f_transfer_price').value =
-      r.transfer_price ? `$${r.transfer_price.toLocaleString()}` : '';
-    document.getElementById('f_cross_month').value   = r.cross_month || '否';
-    document.getElementById('f_invoice_type').value  = r.invoice_type || '電子發票';
+    Object.entries(map).forEach(([id, val]) => { document.getElementById(id).value = val ?? ''; });
+    document.getElementById('f_transfer_ratio').value = ((r.transfer_ratio||0)*100).toFixed(1)+'%';
+    document.getElementById('f_transfer_price').value = r.transfer_price ? `$${r.transfer_price.toLocaleString()}` : '';
+    document.getElementById('f_cross_month').value  = r.cross_month  || '否';
+    document.getElementById('f_invoice_type').value = r.invoice_type || '電子發票';
 
-    (r.batches || []).forEach((b, i) => {
-      if (i < 4) {
+    (r.batches||[]).forEach((b,i) => {
+      if (i<4) {
         document.getElementById(`f_batch_no_${i+1}`).value  = b.no  || '';
         document.getElementById(`f_batch_qty_${i+1}`).value = b.qty || '';
       }
     });
-    validateBatch();
-    updateCrossMonthHint();
-
-    if (r.pad_status === '已完成') {
-      showToast('⚠️ 此筆 PAD 已完成，修改後 ERP 不會自動更新，請留意。', 'info');
-    }
-    document.querySelector('.form-panel').scrollTo({ top: 0, behavior: 'smooth' });
-  } catch(e) {
-    showToast('載入失敗，請重試。', 'error');
-  }
+    validateBatch(); updateCrossMonthHint();
+    if (r.pad_status === '已完成') showToast('⚠️ 此筆 PAD 已完成，修改後 ERP 不會自動更新，請留意。', 'info');
+    document.querySelector('.form-panel').scrollTo({ top:0, behavior:'smooth' });
+  } catch(e) { showToast('載入失敗，請重試。', 'error'); }
 }
 
-// ── 清除表單 ──────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  清除表單
+// ══════════════════════════════════════════════════════════════════
 function clearForm() {
   editingId = null;
   document.getElementById('formTitle').textContent = '新增交易';
   document.getElementById('editModeTag').classList.remove('visible');
   document.getElementById('submitBtn').textContent = '✅ 新增到清單';
   document.getElementById('submitBtn').className   = 'btn btn-success';
-
-  const textIds = [
+  [
     'f_customer_name','f_customer_code','f_customer_order_no','f_remark',
     'f_xin_part_no','f_ju_part_no','f_part_name','f_qty','f_sale_price',
     'f_transfer_price','f_delivery_date','f_ship_date','f_month_first_day',
     'f_invoice_date','f_invoice_no',
-  ];
-  textIds.forEach(id => { document.getElementById(id).value = ''; });
+  ].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('f_cross_month').value  = '否';
   document.getElementById('f_invoice_type').value = '電子發票';
   document.getElementById('cross_month_hint').style.display = 'none';
-  for (let i = 1; i <= 4; i++) {
+  for (let i=1;i<=4;i++) {
     document.getElementById(`f_batch_no_${i}`).value  = '';
     document.getElementById(`f_batch_qty_${i}`).value = '';
   }
   const bv = document.getElementById('batch_validation');
-  bv.className   = 'batch-validation';
-  bv.textContent = '請填寫批號與數量';
-
-  if (currentParams.transfer_ratio) {
-    document.getElementById('f_transfer_ratio').value =
-      (currentParams.transfer_ratio * 100).toFixed(1) + '%';
-  }
+  bv.className = 'batch-validation'; bv.textContent = '請填寫批號與數量';
+  if (currentParams.transfer_ratio)
+    document.getElementById('f_transfer_ratio').value = (currentParams.transfer_ratio*100).toFixed(1)+'%';
 }
 
-// ── 刪除 ──────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  刪除
+// ══════════════════════════════════════════════════════════════════
 function openDeleteModal(id) {
   const r = allRecords.find(x => x.id === id);
   if (!r) return;
   deleteTargetId = id;
 
-  // 用 textContent 填入，避免 XSS
   const info = document.getElementById('deleteInfo');
   info.innerHTML = '';
-  [
-    ['列號', r.seq],
-    ['客戶', r.customer_name],
-    ['客戶單號', r.customer_order_no],
-    ['PAD 狀態', r.pad_status],
-  ].forEach(([lbl, val]) => {
-    const line = document.createElement('div');
-    const strong = document.createElement('strong');
-    strong.textContent = lbl;
-    line.appendChild(strong);
-    line.appendChild(document.createTextNode('：' + (val ?? '')));
-    info.appendChild(line);
+  [['列號', r.seq],['客戶', r.customer_name],['客戶單號', r.customer_order_no],['PAD 狀態', r.pad_status]]
+  .forEach(([lbl, val]) => {
+    const div = document.createElement('div');
+    const s   = document.createElement('strong'); s.textContent = lbl;
+    div.appendChild(s); div.appendChild(document.createTextNode('：' + (val??'')));
+    info.appendChild(div);
   });
 
   const warn = document.getElementById('deleteWarning');
   if (r.pad_status === '已完成') {
     warn.textContent = '⚠️ 此筆 PAD 狀態為「已完成」，ERP 中可能已建立對應單據，請確認 ERP 是否需同步處理。';
     warn.style.display = 'block';
-  } else {
-    warn.style.display = 'none';
-  }
+  } else { warn.style.display = 'none'; }
   document.getElementById('deleteModal').classList.add('open');
 }
 
@@ -1130,38 +1011,27 @@ async function confirmDelete() {
   try {
     const res = await apiFetch(`/api/records/${deleteTargetId}`, 'DELETE');
     closeModal('deleteModal');
-    if (res.success) {
-      showToast('已刪除此筆資料', 'success');
-      loadRecords();
-    } else {
-      showToast('刪除失敗：' + (res.error || ''), 'error');
-    }
-  } catch(e) {
-    showToast('刪除失敗，請重試。', 'error');
-  }
+    if (res.success) { showToast('已刪除此筆資料', 'success'); loadRecords(); }
+    else showToast('刪除失敗：' + (res.error||''), 'error');
+  } catch(e) { showToast('刪除失敗，請重試。', 'error'); }
   deleteTargetId = null;
 }
 
-// ── 鉅侖銷貨旗標快速切換 ─────────────────────────────────────────────────────
 async function toggleJuSaleFlag(id, current) {
   const newVal = current === '是' ? '待人工' : '是';
   try {
     const res = await apiFetch(`/api/records/${id}`, 'PUT', { flag_ju_sale: newVal });
-    if (res.success) {
-      showToast(newVal === '是' ? '✅ 鉅侖銷貨已確認' : '↩️ 已重設為待人工', 'success');
-      loadRecords();
-    }
-  } catch(e) {
-    showToast('更新失敗，請重試。', 'error');
-  }
+    if (res.success) { showToast(newVal==='是'?'✅ 鉅侖銷貨已確認':'↩️ 已重設為待人工','success'); loadRecords(); }
+  } catch(e) { showToast('更新失敗，請重試。', 'error'); }
 }
 
-// ── 主檔管理 ──────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  主檔管理（parts / customers）—— DOM API
+// ══════════════════════════════════════════════════════════════════
 async function openMaster() {
   await Promise.all([loadMasterParts(), loadMasterCustomers()]);
   document.getElementById('masterModal').classList.add('open');
 }
-
 function switchMasterTab(tab, el) {
   document.querySelectorAll('.master-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.master-panel').forEach(p => p.classList.remove('active'));
@@ -1169,7 +1039,7 @@ function switchMasterTab(tab, el) {
   document.getElementById(`master_${tab}`).classList.add('active');
 }
 
-// 品號主檔
+// ── 品號 ─────────────────────────────────────────────────────────
 async function loadMasterParts() {
   const q   = document.getElementById('parts_search')?.value || '';
   const res = await apiFetch(`/api/parts?q=${encodeURIComponent(q)}`);
@@ -1177,141 +1047,98 @@ async function loadMasterParts() {
   const tbody = document.getElementById('parts_tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
-
   if (!PARTS_CACHE.length) {
     const tr = document.createElement('tr');
-    const td = document.createElement('td');
-    td.colSpan = 5; td.className = 'master-empty';
-    td.textContent = '尚無品號資料，請從下方新增';
-    tr.appendChild(td); tbody.appendChild(tr);
-    return;
+    const td = document.createElement('td'); td.colSpan=5; td.className='master-empty';
+    td.textContent='尚無品號資料，請從下方新增'; tr.appendChild(td); tbody.appendChild(tr); return;
   }
-
   PARTS_CACHE.forEach(p => {
-    const tr = document.createElement('tr');
-    tr.id = `prow_${p.id}`;
-    const cells = [p.xin_no, p.ju_no || '—', p.name || '—', p.spec || ''];
-    cells.forEach((val, i) => {
-      const td = document.createElement('td');
-      td.textContent = val;
-      if (i === 0) { td.style.fontFamily = 'monospace'; td.style.fontSize = '12px'; td.style.fontWeight = '700'; }
-      if (i === 1) { td.style.fontFamily = 'monospace'; td.style.fontSize = '12px'; }
-      if (i === 3) { td.style.color = 'var(--gray-400)'; td.style.fontSize = '12px'; }
+    const tr = document.createElement('tr'); tr.id = `prow_${p.id}`;
+    [[p.xin_no,true,true],[p.ju_no||'—',false,true],[p.name||'—'],[p.spec||'',false,false,true]]
+    .forEach(([val, bold, mono, small]) => {
+      const td = document.createElement('td'); td.textContent = val;
+      if (bold)  td.style.fontWeight = '700';
+      if (mono)  { td.style.fontFamily = 'monospace'; td.style.fontSize = '12px'; }
+      if (small) { td.style.color = 'var(--gray-400)'; td.style.fontSize = '12px'; }
       tr.appendChild(td);
     });
-    const actionTd = document.createElement('td');
-    actionTd.style.whiteSpace = 'nowrap';
-
-    const editBtn = document.createElement('button');
-    editBtn.className = 'btn-sm btn-sm-edit';
-    editBtn.style.cssText = 'font-size:11px;padding:3px 8px;';
-    editBtn.textContent = '編輯';
-    editBtn.addEventListener('click', () => startEditPart(p.id, p.xin_no, p.ju_no || '', p.name || '', p.spec || ''));
-
-    const delBtn = document.createElement('button');
-    delBtn.className = 'btn-sm btn-sm-delete';
-    delBtn.style.cssText = 'font-size:11px;padding:3px 8px;margin-left:4px;';
-    delBtn.textContent = '刪除';
-    delBtn.addEventListener('click', () => deletePart(p.id, p.xin_no));
-
-    actionTd.appendChild(editBtn);
-    actionTd.appendChild(delBtn);
-    tr.appendChild(actionTd);
-    tbody.appendChild(tr);
+    const atd = document.createElement('td'); atd.style.whiteSpace='nowrap';
+    const eb = document.createElement('button'); eb.className='btn-sm btn-sm-edit';
+    eb.style.cssText='font-size:11px;padding:3px 8px;'; eb.textContent='編輯';
+    eb.addEventListener('click', () => startEditPart(p.id, p.xin_no, p.ju_no||'', p.name||'', p.spec||''));
+    const db = document.createElement('button'); db.className='btn-sm btn-sm-delete';
+    db.style.cssText='font-size:11px;padding:3px 8px;margin-left:4px;'; db.textContent='刪除';
+    db.addEventListener('click', () => deletePart(p.id, p.xin_no));
+    atd.appendChild(eb); atd.appendChild(db); tr.appendChild(atd); tbody.appendChild(tr);
   });
 }
 
 function startEditPart(id, xin_no, ju_no, name, spec) {
-  const row = document.getElementById(`prow_${id}`);
-  if (!row) return;
+  const row = document.getElementById(`prow_${id}`); if (!row) return;
   row.innerHTML = '';
-
-  const fieldDefs = [
-    { val: xin_no, mono: true, required: true },
-    { val: ju_no,  mono: true },
-    { val: name },
-    { val: spec,   small: true },
+  const defs = [
+    {val:xin_no, key:'xin', primary:true, mono:true},
+    {val:ju_no,  key:'ju',  mono:true},
+    {val:name,   key:'name'},
+    {val:spec,   key:'spec', small:true},
   ];
-  const inputs = fieldDefs.map((def, idx) => {
-    const td    = document.createElement('td');
-    const input = document.createElement('input');
-    input.type  = 'text';
-    input.value = def.val;
-    input.id    = `epart_${['xin','ju','name','spec'][idx]}_${id}`;
-    input.style.cssText = `width:100%;padding:4px 7px;border:1.5px solid ${idx === 0 ? 'var(--blue)' : 'var(--gray-200)'};border-radius:4px;font-size:${def.small ? '12' : '13'}px;${def.mono ? 'font-family:monospace;' : ''}`;
-    td.appendChild(input);
-    row.appendChild(td);
-    return input;
+  defs.forEach(d => {
+    const td  = document.createElement('td');
+    const inp = document.createElement('input'); inp.type='text'; inp.value=d.val;
+    inp.id = `epart_${d.key}_${id}`;
+    inp.style.cssText = `width:100%;padding:4px 7px;border:1.5px solid ${d.primary?'var(--blue)':'var(--gray-200)'};border-radius:4px;font-size:${d.small?'12':'13'}px;${d.mono?'font-family:monospace;':''}`;
+    td.appendChild(inp); row.appendChild(td);
   });
-
-  const actionTd = document.createElement('td');
-  actionTd.style.whiteSpace = 'nowrap';
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'btn-sm btn-sm-edit';
-  saveBtn.style.cssText = 'font-size:11px;padding:3px 8px;background:var(--green);color:white;';
-  saveBtn.textContent = '儲存';
-  saveBtn.addEventListener('click', () => saveEditPart(id));
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'btn-sm btn-sm-delete';
-  cancelBtn.style.cssText = 'font-size:11px;padding:3px 8px;margin-left:4px;';
-  cancelBtn.textContent = '取消';
-  cancelBtn.addEventListener('click', loadMasterParts);
-  actionTd.appendChild(saveBtn);
-  actionTd.appendChild(cancelBtn);
-  row.appendChild(actionTd);
+  const atd = document.createElement('td'); atd.style.whiteSpace='nowrap';
+  const sb = document.createElement('button'); sb.className='btn-sm btn-sm-edit';
+  sb.style.cssText='font-size:11px;padding:3px 8px;background:var(--green);color:white;'; sb.textContent='儲存';
+  sb.addEventListener('click', () => saveEditPart(id));
+  const cb = document.createElement('button'); cb.className='btn-sm btn-sm-delete';
+  cb.style.cssText='font-size:11px;padding:3px 8px;margin-left:4px;'; cb.textContent='取消';
+  cb.addEventListener('click', loadMasterParts);
+  atd.appendChild(sb); atd.appendChild(cb); row.appendChild(atd);
 }
 
 async function saveEditPart(id) {
   const xin_no = document.getElementById(`epart_xin_${id}`)?.value.trim();
-  if (!xin_no) { showToast('欣家豐品號不能為空', 'error'); return; }
+  if (!xin_no) { showToast('欣家豐品號不能為空','error'); return; }
   try {
-    const res = await apiFetch(`/api/parts/${id}`, 'PUT', {
-      xin_no,
-      ju_no: document.getElementById(`epart_ju_${id}`)?.value.trim(),
-      name:  document.getElementById(`epart_name_${id}`)?.value.trim(),
-      spec:  document.getElementById(`epart_spec_${id}`)?.value.trim(),
+    const res = await apiFetch(`/api/parts/${id}`,'PUT',{
+      xin_no, ju_no: document.getElementById(`epart_ju_${id}`)?.value.trim(),
+      name: document.getElementById(`epart_name_${id}`)?.value.trim(),
+      spec: document.getElementById(`epart_spec_${id}`)?.value.trim(),
     });
-    if (res.success) {
-      showToast('✅ 品號資料已更新', 'success');
-      loadMasterParts();
-    } else {
-      showToast(res.error || '儲存失敗', 'error');
-    }
-  } catch(e) { showToast('網路錯誤', 'error'); }
+    if (res.success) { showToast('✅ 品號資料已更新','success'); loadMasterParts(); }
+    else showToast(res.error||'儲存失敗','error');
+  } catch(e) { showToast('網路錯誤','error'); }
 }
 
 async function addPart() {
   const xin_no = document.getElementById('new_xin_no').value.trim();
-  if (!xin_no) { showToast('欣家豐品號為必填', 'error'); return; }
+  if (!xin_no) { showToast('欣家豐品號為必填','error'); return; }
   try {
-    const res = await apiFetch('/api/parts', 'POST', {
-      xin_no,
-      ju_no: document.getElementById('new_ju_no').value.trim(),
-      name:  document.getElementById('new_part_name').value.trim(),
-      spec:  document.getElementById('new_part_spec').value.trim(),
+    const res = await apiFetch('/api/parts','POST',{
+      xin_no, ju_no: document.getElementById('new_ju_no').value.trim(),
+      name: document.getElementById('new_part_name').value.trim(),
+      spec: document.getElementById('new_part_spec').value.trim(),
     });
     if (res.success) {
-      ['new_xin_no','new_ju_no','new_part_name','new_part_spec'].forEach(id => {
-        document.getElementById(id).value = '';
-      });
-      showToast(`✅ 品號「${xin_no}」已新增`, 'success');
-      loadMasterParts();
-    } else {
-      showToast(res.error || '新增失敗', 'error');
-    }
-  } catch(e) { showToast('網路錯誤', 'error'); }
+      ['new_xin_no','new_ju_no','new_part_name','new_part_spec'].forEach(id=>{ document.getElementById(id).value=''; });
+      showToast(`✅ 品號「${xin_no}」已新增`,'success'); loadMasterParts();
+    } else showToast(res.error||'新增失敗','error');
+  } catch(e) { showToast('網路錯誤','error'); }
 }
 
 async function deletePart(id, xin_no) {
   if (!confirm(`確認刪除品號「${xin_no}」？`)) return;
   try {
-    const res = await apiFetch(`/api/parts/${id}`, 'DELETE');
-    if (res.success) { showToast('已刪除', 'success'); loadMasterParts(); }
-    else showToast(res.error || '刪除失敗', 'error');
-  } catch(e) { showToast('網路錯誤', 'error'); }
+    const res = await apiFetch(`/api/parts/${id}`,'DELETE');
+    if (res.success) { showToast('已刪除','success'); loadMasterParts(); }
+    else showToast(res.error||'刪除失敗','error');
+  } catch(e) { showToast('網路錯誤','error'); }
 }
 
-// 客戶主檔
+// ── 客戶 ─────────────────────────────────────────────────────────
 async function loadMasterCustomers() {
   const q   = document.getElementById('customers_search')?.value || '';
   const res = await apiFetch(`/api/customers?q=${encodeURIComponent(q)}`);
@@ -1319,150 +1146,107 @@ async function loadMasterCustomers() {
   const tbody = document.getElementById('customers_tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
-
   if (!CUSTOMERS_CACHE.length) {
     const tr = document.createElement('tr');
-    const td = document.createElement('td');
-    td.colSpan = 4; td.className = 'master-empty';
-    td.textContent = '尚無客戶資料，請從下方新增';
-    tr.appendChild(td); tbody.appendChild(tr);
-    return;
+    const td = document.createElement('td'); td.colSpan=4; td.className='master-empty';
+    td.textContent='尚無客戶資料，請從下方新增'; tr.appendChild(td); tbody.appendChild(tr); return;
   }
-
   CUSTOMERS_CACHE.forEach(c => {
-    const tr = document.createElement('tr');
-    tr.id = `crow_${c.id}`;
-    [c.name, c.code || '—', c.note || ''].forEach((val, i) => {
-      const td = document.createElement('td');
-      td.textContent = val;
-      if (i === 0) { td.style.fontWeight = '700'; }
-      if (i === 1) { td.style.fontFamily = 'monospace'; td.style.fontSize = '12px'; }
-      if (i === 2) { td.style.color = 'var(--gray-400)'; td.style.fontSize = '12px'; }
+    const tr = document.createElement('tr'); tr.id = `crow_${c.id}`;
+    [[c.name,true],[c.code||'—',false,true],[c.note||'',false,false,true]]
+    .forEach(([val, bold, mono, small]) => {
+      const td = document.createElement('td'); td.textContent = val;
+      if (bold)  td.style.fontWeight = '700';
+      if (mono)  { td.style.fontFamily='monospace'; td.style.fontSize='12px'; }
+      if (small) { td.style.color='var(--gray-400)'; td.style.fontSize='12px'; }
       tr.appendChild(td);
     });
-    const actionTd = document.createElement('td');
-    actionTd.style.whiteSpace = 'nowrap';
-
-    const editBtn = document.createElement('button');
-    editBtn.className = 'btn-sm btn-sm-edit';
-    editBtn.style.cssText = 'font-size:11px;padding:3px 8px;';
-    editBtn.textContent = '編輯';
-    editBtn.addEventListener('click', () => startEditCustomer(c.id, c.name, c.code || '', c.note || ''));
-
-    const delBtn = document.createElement('button');
-    delBtn.className = 'btn-sm btn-sm-delete';
-    delBtn.style.cssText = 'font-size:11px;padding:3px 8px;margin-left:4px;';
-    delBtn.textContent = '刪除';
-    delBtn.addEventListener('click', () => deleteCustomer(c.id, c.name));
-
-    actionTd.appendChild(editBtn);
-    actionTd.appendChild(delBtn);
-    tr.appendChild(actionTd);
-    tbody.appendChild(tr);
+    const atd = document.createElement('td'); atd.style.whiteSpace='nowrap';
+    const eb = document.createElement('button'); eb.className='btn-sm btn-sm-edit';
+    eb.style.cssText='font-size:11px;padding:3px 8px;'; eb.textContent='編輯';
+    eb.addEventListener('click', () => startEditCustomer(c.id, c.name, c.code||'', c.note||''));
+    const db = document.createElement('button'); db.className='btn-sm btn-sm-delete';
+    db.style.cssText='font-size:11px;padding:3px 8px;margin-left:4px;'; db.textContent='刪除';
+    db.addEventListener('click', () => deleteCustomer(c.id, c.name));
+    atd.appendChild(eb); atd.appendChild(db); tr.appendChild(atd); tbody.appendChild(tr);
   });
 }
 
 function startEditCustomer(id, name, code, note) {
-  const row = document.getElementById(`crow_${id}`);
-  if (!row) return;
+  const row = document.getElementById(`crow_${id}`); if (!row) return;
   row.innerHTML = '';
-
-  const defs = [
-    { val: name, key: 'name', primary: true },
-    { val: code, key: 'code', mono: true },
-    { val: note, key: 'note' },
-  ];
-  defs.forEach(def => {
-    const td    = document.createElement('td');
-    const input = document.createElement('input');
-    input.type  = 'text';
-    input.value = def.val;
-    input.id    = `ecust_${def.key}_${id}`;
-    input.style.cssText = `width:100%;padding:4px 7px;border:1.5px solid ${def.primary ? 'var(--blue)' : 'var(--gray-200)'};border-radius:4px;font-size:13px;${def.mono ? 'font-family:monospace;' : ''}`;
-    td.appendChild(input);
-    row.appendChild(td);
+  [{val:name,key:'name',primary:true},{val:code,key:'code',mono:true},{val:note,key:'note'}]
+  .forEach(d => {
+    const td  = document.createElement('td');
+    const inp = document.createElement('input'); inp.type='text'; inp.value=d.val;
+    inp.id = `ecust_${d.key}_${id}`;
+    inp.style.cssText=`width:100%;padding:4px 7px;border:1.5px solid ${d.primary?'var(--blue)':'var(--gray-200)'};border-radius:4px;font-size:13px;${d.mono?'font-family:monospace;':''}`;
+    td.appendChild(inp); row.appendChild(td);
   });
-
-  const actionTd = document.createElement('td');
-  actionTd.style.whiteSpace = 'nowrap';
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'btn-sm btn-sm-edit';
-  saveBtn.style.cssText = 'font-size:11px;padding:3px 8px;background:var(--green);color:white;';
-  saveBtn.textContent = '儲存';
-  saveBtn.addEventListener('click', () => saveEditCustomer(id));
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'btn-sm btn-sm-delete';
-  cancelBtn.style.cssText = 'font-size:11px;padding:3px 8px;margin-left:4px;';
-  cancelBtn.textContent = '取消';
-  cancelBtn.addEventListener('click', loadMasterCustomers);
-  actionTd.appendChild(saveBtn);
-  actionTd.appendChild(cancelBtn);
-  row.appendChild(actionTd);
+  const atd = document.createElement('td'); atd.style.whiteSpace='nowrap';
+  const sb = document.createElement('button'); sb.className='btn-sm btn-sm-edit';
+  sb.style.cssText='font-size:11px;padding:3px 8px;background:var(--green);color:white;'; sb.textContent='儲存';
+  sb.addEventListener('click', () => saveEditCustomer(id));
+  const cb = document.createElement('button'); cb.className='btn-sm btn-sm-delete';
+  cb.style.cssText='font-size:11px;padding:3px 8px;margin-left:4px;'; cb.textContent='取消';
+  cb.addEventListener('click', loadMasterCustomers);
+  atd.appendChild(sb); atd.appendChild(cb); row.appendChild(atd);
 }
 
 async function saveEditCustomer(id) {
   const name = document.getElementById(`ecust_name_${id}`)?.value.trim();
-  if (!name) { showToast('客戶名稱不能為空', 'error'); return; }
+  if (!name) { showToast('客戶名稱不能為空','error'); return; }
   try {
-    const res = await apiFetch(`/api/customers/${id}`, 'PUT', {
-      name,
-      code: document.getElementById(`ecust_code_${id}`)?.value.trim(),
+    const res = await apiFetch(`/api/customers/${id}`,'PUT',{
+      name, code: document.getElementById(`ecust_code_${id}`)?.value.trim(),
       note: document.getElementById(`ecust_note_${id}`)?.value.trim(),
     });
-    if (res.success) {
-      showToast('✅ 客戶資料已更新', 'success');
-      loadMasterCustomers();
-    } else {
-      showToast(res.error || '儲存失敗', 'error');
-    }
-  } catch(e) { showToast('網路錯誤', 'error'); }
+    if (res.success) { showToast('✅ 客戶資料已更新','success'); loadMasterCustomers(); }
+    else showToast(res.error||'儲存失敗','error');
+  } catch(e) { showToast('網路錯誤','error'); }
 }
 
 async function addCustomer() {
   const name = document.getElementById('new_cust_name').value.trim();
-  if (!name) { showToast('客戶名稱為必填', 'error'); return; }
+  if (!name) { showToast('客戶名稱為必填','error'); return; }
   try {
-    const res = await apiFetch('/api/customers', 'POST', {
-      name,
-      code: document.getElementById('new_cust_code').value.trim(),
+    const res = await apiFetch('/api/customers','POST',{
+      name, code: document.getElementById('new_cust_code').value.trim(),
       note: document.getElementById('new_cust_note').value.trim(),
     });
     if (res.success) {
-      ['new_cust_name','new_cust_code','new_cust_note'].forEach(id => {
-        document.getElementById(id).value = '';
-      });
-      showToast(`✅ 客戶「${name}」已新增`, 'success');
-      loadMasterCustomers();
-    } else {
-      showToast(res.error || '新增失敗', 'error');
-    }
-  } catch(e) { showToast('網路錯誤', 'error'); }
+      ['new_cust_name','new_cust_code','new_cust_note'].forEach(id=>{ document.getElementById(id).value=''; });
+      showToast(`✅ 客戶「${name}」已新增`,'success'); loadMasterCustomers();
+    } else showToast(res.error||'新增失敗','error');
+  } catch(e) { showToast('網路錯誤','error'); }
 }
 
 async function deleteCustomer(id, name) {
   if (!confirm(`確認刪除客戶「${name}」？`)) return;
   try {
-    const res = await apiFetch(`/api/customers/${id}`, 'DELETE');
-    if (res.success) { showToast('已刪除', 'success'); loadMasterCustomers(); }
-    else showToast(res.error || '刪除失敗', 'error');
-  } catch(e) { showToast('網路錯誤', 'error'); }
+    const res = await apiFetch(`/api/customers/${id}`,'DELETE');
+    if (res.success) { showToast('已刪除','success'); loadMasterCustomers(); }
+    else showToast(res.error||'刪除失敗','error');
+  } catch(e) { showToast('網路錯誤','error'); }
 }
 
-// ── 參數設定 ──────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  參數設定（DOM API）
+// ══════════════════════════════════════════════════════════════════
 const PARAM_DEFS = [
-  { key: 'transfer_ratio',  label: '當月移轉比例 ⭐', desc: '例：0.22 代表 22%（每月初更新）', highlight: true },
-  { key: 'xin_order_type',  label: '欣家豐訂單單別',  desc: '材料移轉訂單' },
-  { key: 'xin_sale_type',   label: '欣家豐銷貨單別',  desc: '材料移轉銷貨單' },
-  { key: 'ju_pur_type',     label: '鉅侖採購單別',    desc: '材料採購單（移轉用）' },
-  { key: 'ju_rec_type',     label: '鉅侖進貨單別',    desc: '材料進貨單（移轉用）' },
-  { key: 'ju_sale_type',    label: '鉅侖銷貨單別',    desc: '材料銷貨單（特材）' },
-  { key: 'xin_to_ju_code',  label: '欣家豐→鉅侖代號', desc: '欣家豐訂/銷單中鉅侖的客戶代號' },
-  { key: 'ju_to_xin_code',  label: '鉅侖→欣家豐代號', desc: '鉅侖採/進單中欣家豐的供應商代號' },
+  {key:'transfer_ratio',  label:'當月移轉比例 ⭐', desc:'例：0.22 代表 22%（每月初更新）', highlight:true},
+  {key:'xin_order_type',  label:'欣家豐訂單單別',  desc:'材料移轉訂單'},
+  {key:'xin_sale_type',   label:'欣家豐銷貨單別',  desc:'材料移轉銷貨單'},
+  {key:'ju_pur_type',     label:'鉅侖採購單別',    desc:'材料採購單（移轉用）'},
+  {key:'ju_rec_type',     label:'鉅侖進貨單別',    desc:'材料進貨單（移轉用）'},
+  {key:'ju_sale_type',    label:'鉅侖銷貨單別',    desc:'材料銷貨單（特材）'},
+  {key:'xin_to_ju_code',  label:'欣家豐→鉅侖代號', desc:'欣家豐訂/銷單中鉅侖的客戶代號'},
+  {key:'ju_to_xin_code',  label:'鉅侖→欣家豐代號', desc:'鉅侖採/進單中欣家豐的供應商代號'},
 ];
 const PARAM_DEFAULTS = {
-  transfer_ratio: 0.22, xin_order_type: '221A', xin_sale_type: '231A',
-  ju_pur_type: '331A', ju_rec_type: '341A', ju_sale_type: '2312',
-  xin_to_ju_code: 'T99001', ju_to_xin_code: 'B0306'
+  transfer_ratio:0.22, xin_order_type:'221A', xin_sale_type:'231A',
+  ju_pur_type:'331A', ju_rec_type:'341A', ju_sale_type:'2312',
+  xin_to_ju_code:'T99001', ju_to_xin_code:'B0306',
 };
 
 async function openParams() {
@@ -1471,85 +1255,64 @@ async function openParams() {
     const body   = document.getElementById('paramsBody');
     body.innerHTML = '';
     PARAM_DEFS.forEach(d => {
-      const row = document.createElement('div');
-      row.className = 'params-row';
-      const textDiv = document.createElement('div');
-      const lbl  = document.createElement('div');
-      lbl.className = 'params-label';
-      lbl.textContent = d.label;
-      const desc = document.createElement('div');
-      desc.className = 'params-desc';
-      desc.textContent = d.desc;
-      textDiv.appendChild(lbl);
-      textDiv.appendChild(desc);
-
-      const input = document.createElement('input');
-      input.type  = 'text';
-      input.className = 'params-input' + (d.highlight ? ' params-highlight' : '');
-      input.id    = `param_${d.key}`;
-      input.value = params[d.key] !== undefined ? params[d.key] : PARAM_DEFAULTS[d.key];
-
-      row.appendChild(textDiv);
-      row.appendChild(input);
-      body.appendChild(row);
+      const row = document.createElement('div'); row.className = 'params-row';
+      const txt = document.createElement('div');
+      const lbl = document.createElement('div'); lbl.className='params-label'; lbl.textContent=d.label;
+      const dsc = document.createElement('div'); dsc.className='params-desc';  dsc.textContent=d.desc;
+      txt.appendChild(lbl); txt.appendChild(dsc);
+      const inp = document.createElement('input'); inp.type='text';
+      inp.className = 'params-input' + (d.highlight?' params-highlight':'');
+      inp.id = `param_${d.key}`;
+      inp.value = params[d.key] !== undefined ? params[d.key] : PARAM_DEFAULTS[d.key];
+      row.appendChild(txt); row.appendChild(inp); body.appendChild(row);
     });
     document.getElementById('paramsModal').classList.add('open');
-  } catch(e) {
-    showToast('無法載入參數設定。', 'error');
-  }
+  } catch(e) { showToast('無法載入參數設定。','error'); }
 }
 
 async function saveParams() {
   const bodyData = {};
   PARAM_DEFS.forEach(d => {
     const val = document.getElementById(`param_${d.key}`)?.value;
-    if (val !== undefined) {
-      bodyData[d.key] = d.key === 'transfer_ratio' ? parseFloat(val) : val;
-    }
+    if (val !== undefined) bodyData[d.key] = d.key==='transfer_ratio' ? parseFloat(val) : val;
   });
   try {
-    const res = await apiFetch('/api/params', 'POST', bodyData);
+    const res = await apiFetch('/api/params','POST',bodyData);
     if (res.success) {
       currentParams = res.params;
       closeModal('paramsModal');
-      showToast('✅ 參數已儲存', 'success');
-      document.getElementById('f_transfer_ratio').value =
-        (currentParams.transfer_ratio * 100).toFixed(1) + '%';
+      showToast('✅ 參數已儲存','success');
+      document.getElementById('f_transfer_ratio').value = (currentParams.transfer_ratio*100).toFixed(1)+'%';
       calcTransferPrice();
     }
-  } catch(e) {
-    showToast('儲存失敗，請重試。', 'error');
-  }
+  } catch(e) { showToast('儲存失敗，請重試。','error'); }
 }
 
-// ── Modal helpers ─────────────────────────────────────────────────────────────
-function closeModal(id) {
-  document.getElementById(id)?.classList.remove('open');
-}
+// ══════════════════════════════════════════════════════════════════
+//  Modal & Toast
+// ══════════════════════════════════════════════════════════════════
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
 function showToast(msg, type = 'info') {
-  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-  const t     = document.createElement('div');
-  t.className = `toast ${type}`;
-  const icon  = document.createElement('span');
-  icon.textContent = icons[type] || '';
-  const text  = document.createElement('span');
-  text.textContent = msg;             // textContent 防 XSS
-  t.appendChild(icon);
-  t.appendChild(text);
+  const icons = {success:'✅', error:'❌', info:'ℹ️'};
+  const t = document.createElement('div'); t.className = `toast ${type}`;
+  const ic = document.createElement('span'); ic.textContent = icons[type]||'';
+  const tx = document.createElement('span'); tx.textContent = msg; // textContent 防 XSS
+  t.appendChild(ic); t.appendChild(tx);
   document.getElementById('toastContainer').appendChild(t);
   setTimeout(() => t.remove(), 3500);
 }
 
-// ── 初始化 ───────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+//  初始化
+// ══════════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   initBatchRows();
-  bindFormEvents();
+  bindEvents();
   loadMasterCache();
   loadRecords();
-  setInterval(loadRecords,     30000);
-  setInterval(loadMasterCache, 120000);
+  setInterval(loadRecords,     30_000);
+  setInterval(loadMasterCache, 120_000);
 });
 </script>
 </body>

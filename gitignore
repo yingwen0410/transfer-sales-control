@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+
+# 資料與暫存
+data.json
+data.json.tmp
+data.json.lock
+data.json.bak
+*.bak
+*.log
+
+# 環境
+.env
+.env.*
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

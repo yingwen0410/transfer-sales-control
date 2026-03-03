@@ -1,0 +1,149 @@
+{
+  "records": [
+    {
+      "id": "2d2f51f3-82bc-4362-9fd6-757b21c82fbf",
+      "seq": 1,
+      "txn_id": "TXN-202602-001",
+      "pad_status": "待建單",
+      "pad_executed_at": "",
+      "pad_error": "",
+      "created_at": "2026/02/26 17:28",
+      "customer_name": "TEAT",
+      "customer_code": "",
+      "customer_order_no": "123",
+      "remark": "TEAT 123",
+      "xin_part_no": "CUA88888",
+      "ju_part_no": "",
+      "part_name": "",
+      "qty": 100,
+      "sale_price": 1000,
+      "transfer_ratio": 0.22,
+      "transfer_price": 220,
+      "delivery_date": "2026-03-01",
+      "ship_date": "2026-03-01",
+      "month_first_day": "2026/03/01",
+      "cross_month": "否",
+      "invoice_date": "2026-03-01",
+      "invoice_no": "TU7777777",
+      "invoice_type": "電子發票",
+      "batches": [
+        {
+          "no": "post1",
+          "qty": 30
+        },
+        {
+          "no": "post2",
+          "qty": 20
+        },
+        {
+          "no": "post3",
+          "qty": 50
+        }
+      ],
+      "batch_total": 100,
+      "flag_xin_order": "",
+      "flag_xin_sale": "",
+      "flag_ju_purchase": "",
+      "flag_ju_receipt": "",
+      "flag_ju_sale": "是",
+      "modified_at": "2026/02/26 17:35"
+    },
+    {
+      "id": "23972f78-422e-479f-ba86-0b58fd413281",
+      "seq": 2,
+      "txn_id": "TXN-202603-002",
+      "pad_status": "待建單",
+      "pad_executed_at": "",
+      "pad_error": "",
+      "created_at": "2026/03/03 09:15",
+      "customer_name": "ASMPT",
+      "customer_code": "F99005",
+      "customer_order_no": "4510161324",
+      "remark": "ASMPT 4510161324",
+      "xin_part_no": "CUD11A01202",
+      "ju_part_no": "CUD11A01202",
+      "part_name": "UV Tape GDT-E254A",
+      "qty": 10,
+      "sale_price": 1000.0,
+      "transfer_ratio": 0.22,
+      "transfer_price": 220.0,
+      "delivery_date": "2026-03-28",
+      "ship_date": "2026-03-28",
+      "month_first_day": "2026/03/01",
+      "cross_month": "是",
+      "invoice_date": "2026-04-01",
+      "invoice_no": "XX56474504",
+      "invoice_type": "電子發票",
+      "batches": [
+        {
+          "no": "231124-5150AN0",
+          "qty": 3
+        },
+        {
+          "no": "231124-5150AN0（佳邦）",
+          "qty": 7
+        }
+      ],
+      "batch_total": 10,
+      "flag_xin_order": "",
+      "flag_xin_sale": "",
+      "flag_ju_purchase": "",
+      "flag_ju_receipt": "",
+      "flag_ju_sale": "待人工"
+    }
+  ],
+  "params": {
+    "transfer_ratio": 0.22,
+    "updated_at": "2026/03/03",
+    "ju_rec_type": "341A",
+    "xin_order_type": "221A",
+    "xin_to_ju_code": "T99001",
+    "ju_pur_type": "331A",
+    "xin_sale_type": "231A",
+    "ju_sale_type": "2312",
+    "ju_to_xin_code": "B0306"
+  },
+  "parts": [
+    {
+      "id": "81096078-7e15-4593-a62d-1686ef6accaa",
+      "xin_no": "CUD11A01201",
+      "ju_no": "CUD11A01201",
+      "name": "UV Tape GDT-E254A",
+      "spec": "330mm"
+    },
+    {
+      "id": "e64bf0d1-3f39-43ca-9116-a174c8badb4e",
+      "xin_no": "CUD11A01202",
+      "ju_no": "CUD11A01202",
+      "name": "UV Tape GDT-E254A",
+      "spec": "300mm*100M"
+    },
+    {
+      "id": "f49ff5b8-d662-43be-bca7-457088937fbe",
+      "xin_no": "CUD11A01203",
+      "ju_no": "CUD11A01203",
+      "name": "UV Tape GDT-E254A",
+      "spec": "230mm*100M"
+    }
+  ],
+  "customers": [
+    {
+      "id": "2f4e7ca6-6e3b-4931-89aa-b2cfbd9a2fb8",
+      "name": "ADATA",
+      "code": "F02009",
+      "note": ""
+    },
+    {
+      "id": "32fa1b19-e6a9-4171-a4a1-3c7a9ea95abb",
+      "name": "ASMPT",
+      "code": "F99005",
+      "note": ""
+    },
+    {
+      "id": "1e6c7fd6-2999-41ab-a09f-36d864253478",
+      "name": "FlexEnable Technology Limited",
+      "code": "F04001",
+      "note": ""
+    }
+  ]
+}
