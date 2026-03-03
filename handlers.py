@@ -372,6 +372,111 @@ class ParamsHandler(BaseHandler):
         self.ok({"params": params})
 
 
+
+
+# ── /api/pad/* ── Power Automate 專用 endpoint ───────────────────────────────
+#
+# 這兩個 endpoint 與 /api/records 的一般 PUT 刻意分開，原因：
+#   1. 欄位白名單完全不同：PA 只能寫 pad_* 欄位，不能動業務欄位
+#   2. 驗證規則不同：pad_status 只允許特定值，不需 batch_total 驗證
+#   3. 讓 PA flow 的 URL 語意更清晰，日後除錯容易定位
+
+_PAD_ALLOWED_STATUSES = {"待建單", "建單中", "已完成", "錯誤", "待建單（已修改）"}
+
+
+class PadHandler(BaseHandler):
+    """
+    /api/pad/queue  GET  → 取得 PA 待處理清單
+    /api/pad/{id}   POST → PA 回寫執行結果
+    """
+
+    def get_queue(self, query_string: str):
+        """
+        回傳 pad_status 符合條件的記錄。
+        Query params:
+            status  篩選 pad_status（預設 "待建單"，可逗號分隔多個值）
+            limit   最多回傳幾筆（預設 50，最大 200）
+        回應：
+            { "records": [...], "total": N, "fetched_at": "..." }
+        """
+        qs = parse_qs(query_string)
+        raw_status = qs.get("status", ["待建單"])[0].strip()
+        statuses   = {s.strip() for s in raw_status.split(",") if s.strip()}
+        statuses   = statuses & _PAD_ALLOWED_STATUSES
+        if not statuses:
+            statuses = {"待建單"}
+
+        limit = min(int(qs.get("limit", ["50"])[0] or 50), 200)
+
+        data    = load_data()
+        records = [r for r in data.get("records", [])
+                   if r.get("pad_status") in statuses]
+        records.sort(key=lambda r: r.get("seq", 0))
+        records = records[:limit]
+
+        self.send_json({
+            "records":    records,
+            "total":      len(records),
+            "fetched_at": datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+        })
+
+    def post_result(self, rec_id: str):
+        """
+        PA 建完單後回寫執行結果。
+        Body（JSON）：
+            pad_status      必填  "建單中" | "已完成" | "錯誤"
+            pad_executed_at 選填  留空由後端自動填入
+            pad_error       選填  錯誤訊息（pad_status=="錯誤" 時必填）
+        回應：
+            { "success": true, "record": { ...更新後完整記錄... } }
+        """
+        body = self.read_body()
+
+        pad_status = str(body.get("pad_status", "")).strip()[:50]
+        pad_error  = str(body.get("pad_error",  "")).strip()[:500]
+        pad_exec   = str(body.get("pad_executed_at", "")).strip()[:30]
+
+        if pad_status not in _PAD_ALLOWED_STATUSES:
+            self.error(
+                f"pad_status 不合法，允許值：{', '.join(sorted(_PAD_ALLOWED_STATUSES))}",
+                400
+            )
+            return
+
+        if pad_status == "錯誤" and not pad_error:
+            self.error("pad_status 為「錯誤」時，pad_error 不能為空", 400)
+            return
+
+        if not pad_exec:
+            pad_exec = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+        with transaction() as data:
+            idx = next(
+                (i for i, r in enumerate(data["records"]) if r["id"] == rec_id),
+                None
+            )
+            if idx is None:
+                raise _AbortTransaction(not_found=True)
+
+            r = data["records"][idx]
+
+            # 只允許覆蓋 pad_* 欄位，任何業務欄位都不動
+            r["pad_status"]      = pad_status
+            r["pad_executed_at"] = pad_exec
+            r["pad_error"]       = pad_error
+
+            # 若 PA 宣告「已完成」，自動把四張 ERP 旗標標為完成
+            # flag_ju_sale 維持人工確認，不自動設定
+            if pad_status == "已完成":
+                r["flag_xin_order"]   = r.get("flag_xin_order")   or "是"
+                r["flag_xin_sale"]    = r.get("flag_xin_sale")    or "是"
+                r["flag_ju_purchase"] = r.get("flag_ju_purchase") or "是"
+                r["flag_ju_receipt"]  = r.get("flag_ju_receipt")  or "是"
+
+            updated = data["records"][idx]
+
+        self.ok({"record": updated})
+
 # ── _AbortTransaction：讓 transaction() contextmanager 不寫入 ────────────────
 
 class _AbortTransaction(Exception):
@@ -459,6 +564,21 @@ def dispatch(request_handler):
             h = ParamsHandler(request_handler)
             if   method == "GET":  h.get()
             elif method == "POST": h.post()
+            else: _method_not_allowed(request_handler)
+            return
+
+
+        # ── /api/pad ── Power Automate 專用 ──
+        if path == "/api/pad/queue":
+            h = PadHandler(request_handler)
+            if method == "GET": h.get_queue(qs)
+            else: _method_not_allowed(request_handler)
+            return
+
+        if path.startswith("/api/pad/") and path != "/api/pad/queue":
+            rec_id = path.split("/")[-1]
+            h = PadHandler(request_handler)
+            if method == "POST": h.post_result(rec_id)
             else: _method_not_allowed(request_handler)
             return
 
